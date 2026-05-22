@@ -1,0 +1,2643 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SkillPath · 找到你下一门最该上的课</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..900,0..100;1,9..144,300..900,0..100&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #f5f0e8;
+    --paper-2: #ede4d3;
+    --cream: #fffaf2;
+    --cream-2: #faf3e7;
+    --ink: #1c1917;
+    --ink-2: #292524;
+    --ink-3: #57534e;
+    --ink-4: #78716c;
+    --ink-5: #a8a29e;
+    --rust: #b85c38;
+    --rust-deep: #8b3a1f;
+    --rust-soft: #e8c5b0;
+    --rust-bg: #f5e1d0;
+    --moss: #65a30d;
+    --moss-deep: #4d7c0f;
+    --moss-bg: #ecf2cf;
+    --ochre: #ca8a04;
+    --ochre-bg: #f5e7b6;
+    --border: #d6c9b0;
+    --border-strong: #b9a987;
+    --border-soft: #e9dfc8;
+    --shadow: 0 1px 0 rgba(28,25,23,0.04), 0 4px 14px rgba(120, 80, 40, 0.06);
+    --shadow-lg: 0 1px 0 rgba(28,25,23,0.04), 0 12px 40px rgba(120, 80, 40, 0.12);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Subtle paper grain */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(rgba(120, 80, 40, 0.03) 1px, transparent 1px),
+      radial-gradient(rgba(120, 80, 40, 0.02) 1px, transparent 1px);
+    background-size: 28px 28px, 17px 17px;
+    background-position: 0 0, 14px 14px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ============== Top Bar ============== */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(245, 240, 232, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .topbar-inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 18px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  .logo-mark {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: var(--ink);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+
+  .logo-mark svg { color: var(--paper); }
+
+  .logo-text {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 36, 'wght' 600;
+    font-size: 19px;
+    letter-spacing: -0.015em;
+  }
+
+  /* Progress steps */
+  .progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    justify-content: center;
+    max-width: 540px;
+  }
+
+  .progress-step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--ink-4);
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s;
+  }
+
+  .progress-step:hover { color: var(--ink-2); }
+
+  .progress-step.active { color: var(--ink); font-weight: 500; }
+  .progress-step.done { color: var(--moss-deep); }
+
+  .progress-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-strong);
+    background: var(--cream);
+    display: grid;
+    place-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 500;
+    flex-shrink: 0;
+    transition: all 0.25s;
+  }
+
+  .progress-step.active .progress-dot {
+    background: var(--ink);
+    color: var(--cream);
+    border-color: var(--ink);
+  }
+
+  .progress-step.done .progress-dot {
+    background: var(--moss-deep);
+    color: var(--paper);
+    border-color: var(--moss-deep);
+  }
+
+  .progress-line {
+    width: 24px;
+    height: 1.5px;
+    background: var(--border-strong);
+  }
+
+  .progress-step.done + .progress-line { background: var(--moss-deep); }
+
+  .help-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    color: var(--ink-3);
+    font-size: 13px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: all 0.15s;
+  }
+
+  .help-link:hover { background: var(--cream-2); color: var(--ink); }
+
+  /* ============== Main ============== */
+  .stage {
+    position: relative;
+    z-index: 1;
+    min-height: calc(100vh - 70px);
+    padding: 0 32px;
+  }
+
+  .step {
+    display: none;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 48px 0 80px;
+    animation: stepIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .step.active { display: block; }
+
+  @keyframes stepIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ============== Typography ============== */
+  .display {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 144, 'wght' 600, 'SOFT' 30;
+    font-size: clamp(38px, 6vw, 64px);
+    letter-spacing: -0.025em;
+    line-height: 1.04;
+    color: var(--ink);
+    margin: 0 0 18px;
+  }
+
+  .display em {
+    font-style: italic;
+    color: var(--rust);
+    font-variation-settings: 'opsz' 144, 'wght' 500, 'SOFT' 80;
+  }
+
+  .headline {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 72, 'wght' 600, 'SOFT' 40;
+    font-size: clamp(28px, 3.6vw, 40px);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--ink);
+    margin: 0 0 14px;
+  }
+
+  .headline em {
+    font-style: italic;
+    color: var(--rust);
+    font-variation-settings: 'opsz' 72, 'wght' 500, 'SOFT' 80;
+  }
+
+  .title {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 36, 'wght' 600;
+    font-size: 22px;
+    letter-spacing: -0.012em;
+    line-height: 1.2;
+    color: var(--ink);
+    margin: 0 0 6px;
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--rust);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .eyebrow::before {
+    content: '';
+    width: 24px;
+    height: 1px;
+    background: var(--rust);
+  }
+
+  .lead {
+    font-size: 17px;
+    color: var(--ink-3);
+    line-height: 1.6;
+    max-width: 640px;
+    margin-bottom: 30px;
+  }
+
+  .lead-sm {
+    font-size: 14.5px;
+    color: var(--ink-3);
+    line-height: 1.6;
+    max-width: 580px;
+    margin-bottom: 24px;
+  }
+
+  /* ============== Buttons ============== */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 24px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    transition: all 0.18s;
+    letter-spacing: -0.005em;
+  }
+
+  .btn-primary {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .btn-primary:hover {
+    background: var(--rust-deep);
+    transform: translateY(-1px);
+  }
+  .btn-primary:disabled {
+    background: var(--ink-5);
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--ink-2);
+    border: 1px solid var(--border-strong);
+  }
+  .btn-ghost:hover { background: var(--cream); }
+
+  .btn-rust {
+    background: var(--rust);
+    color: var(--cream);
+  }
+  .btn-rust:hover { background: var(--rust-deep); transform: translateY(-1px); }
+
+  .btn-large {
+    padding: 16px 28px;
+    font-size: 15px;
+  }
+
+  .step-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 40px;
+    padding-top: 28px;
+    border-top: 1px solid var(--border-soft);
+  }
+
+  .footer-hint {
+    font-size: 13px;
+    color: var(--ink-4);
+  }
+
+  /* ============== Step 1 - Welcome ============== */
+  .welcome {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 72px;
+    align-items: center;
+    min-height: 70vh;
+  }
+
+  .welcome-side {
+    position: relative;
+  }
+
+  .welcome-illust {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 36px;
+    position: relative;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .illust-corner {
+    position: absolute;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--ink-4);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .illust-corner.tl { top: 18px; left: 22px; }
+  .illust-corner.tr { top: 18px; right: 22px; }
+  .illust-corner.bl { bottom: 18px; left: 22px; }
+  .illust-corner.br { bottom: 18px; right: 22px; }
+
+  .illust-content {
+    padding: 28px 8px 22px;
+    text-align: center;
+  }
+
+  .illust-quote {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 144, 'wght' 400, 'SOFT' 60;
+    font-style: italic;
+    font-size: 26px;
+    line-height: 1.3;
+    color: var(--ink);
+    margin-bottom: 20px;
+    letter-spacing: -0.01em;
+  }
+
+  .illust-quote .underline {
+    background: linear-gradient(transparent 65%, var(--rust-bg) 65%);
+    padding: 0 4px;
+  }
+
+  .illust-author {
+    font-size: 12px;
+    color: var(--ink-4);
+    margin-top: 18px;
+  }
+
+  .illust-author strong {
+    color: var(--ink-2);
+    font-weight: 500;
+  }
+
+  .welcome-features {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 36px;
+  }
+
+  .welcome-feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 0;
+    border-top: 1px solid var(--border-soft);
+  }
+  .welcome-feature:last-child { border-bottom: 1px solid var(--border-soft); }
+
+  .welcome-feature-num {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 72, 'wght' 500;
+    font-style: italic;
+    font-size: 28px;
+    color: var(--rust);
+    line-height: 1;
+    flex-shrink: 0;
+    width: 40px;
+  }
+
+  .welcome-feature-text strong {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .welcome-feature-text span {
+    font-size: 13.5px;
+    color: var(--ink-3);
+    line-height: 1.55;
+  }
+
+  .welcome-cta {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 36px;
+  }
+
+  .welcome-meta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 32px;
+    padding-top: 22px;
+    border-top: 1px solid var(--border-soft);
+  }
+
+  .meta-avatars {
+    display: flex;
+  }
+
+  .meta-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--paper);
+    margin-left: -8px;
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--paper);
+  }
+
+  .meta-avatar:first-child { margin-left: 0; }
+  .meta-avatar:nth-child(1) { background: #b85c38; }
+  .meta-avatar:nth-child(2) { background: #4d7c0f; }
+  .meta-avatar:nth-child(3) { background: #ca8a04; }
+  .meta-avatar:nth-child(4) { background: #1c1917; }
+
+  .meta-text {
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+
+  .meta-text strong { color: var(--ink); font-weight: 600; }
+
+  /* ============== Step 2 - Profile ============== */
+  .step-shell {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .form-section { margin-bottom: 30px; }
+
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .form-hint {
+    font-size: 12.5px;
+    color: var(--ink-4);
+    margin-bottom: 12px;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 13px 16px;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14.5px;
+    color: var(--ink);
+    transition: all 0.15s;
+  }
+
+  .form-input:hover { border-color: var(--border-strong); }
+  .form-input:focus {
+    outline: none;
+    border-color: var(--ink);
+    box-shadow: 0 0 0 4px rgba(28, 25, 23, 0.06);
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .pick-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .pick-chip {
+    padding: 8px 16px;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .pick-chip:hover { border-color: var(--border-strong); background: var(--cream-2); }
+
+  .pick-chip.on {
+    background: var(--ink);
+    color: var(--cream);
+    border-color: var(--ink);
+  }
+
+  .pick-chip.on:hover { background: var(--rust-deep); border-color: var(--rust-deep); }
+
+  /* ============== Step 3 - Skills ============== */
+  .skills-group {
+    margin-bottom: 28px;
+  }
+
+  .skills-group-title {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 36, 'wght' 600;
+    font-size: 18px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .skills-group-title .count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--ink-4);
+    font-weight: 400;
+    font-variation-settings: normal;
+  }
+
+  /* ============== Step 4 - Career ============== */
+  .careers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .career {
+    padding: 22px;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .career:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+
+  .career.on {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .career.on .career-name,
+  .career.on .career-meta { color: var(--paper); }
+  .career.on .career-tags span {
+    background: rgba(255, 250, 242, 0.08);
+    border-color: rgba(255, 250, 242, 0.15);
+    color: var(--paper);
+  }
+  .career.on .career-salary { color: var(--rust-soft); }
+
+  .career-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 14px;
+    background: var(--paper-2);
+    color: var(--ink-2);
+  }
+
+  .career.on .career-icon {
+    background: var(--rust);
+    color: var(--cream);
+  }
+
+  .career-name {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 36, 'wght' 600;
+    font-size: 18px;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .career-salary {
+    font-size: 13px;
+    color: var(--rust);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .career-meta {
+    font-size: 12.5px;
+    color: var(--ink-4);
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+
+  .career-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .career-tags span {
+    font-size: 11px;
+    padding: 2px 8px;
+    background: var(--paper-2);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    color: var(--ink-3);
+  }
+
+  .career-check {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--rust);
+    display: none;
+    place-items: center;
+    color: white;
+  }
+
+  .career.on .career-check { display: grid; }
+
+  /* ============== Step 5 - Result ============== */
+  .result-hero {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 40px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .result-hero::after {
+    content: '';
+    position: absolute;
+    right: -80px;
+    top: -80px;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, var(--rust-bg), transparent);
+    pointer-events: none;
+  }
+
+  .result-hero-content { position: relative; z-index: 1; max-width: 720px; }
+
+  .result-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--ink-4);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 14px;
+  }
+
+  .result-match {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-top: 22px;
+    padding-top: 22px;
+    border-top: 1px solid var(--border-soft);
+  }
+
+  .result-match-val {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 144, 'wght' 600;
+    font-size: 56px;
+    color: var(--rust);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  .result-match-lbl {
+    font-size: 13.5px;
+    color: var(--ink-3);
+    line-height: 1.4;
+  }
+
+  .result-match-lbl strong { color: var(--ink); font-weight: 600; }
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 24px;
+    margin-bottom: 28px;
+  }
+
+  .panel {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+  }
+
+  .panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 18px;
+  }
+
+  .panel-title {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 36, 'wght' 600;
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+
+  .panel-sub {
+    font-size: 12.5px;
+    color: var(--ink-4);
+  }
+
+  /* Recommended courses (cleaner) */
+  .course {
+    padding: 20px 0;
+    border-top: 1px solid var(--border-soft);
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .course:first-of-type { border-top: none; padding-top: 0; }
+
+  .course-rank {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 72, 'wght' 500;
+    font-style: italic;
+    font-size: 22px;
+    color: var(--rust);
+    line-height: 1;
+    padding-top: 2px;
+  }
+
+  .course-body { min-width: 0; }
+
+  .course-title {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 36, 'wght' 600;
+    font-size: 17px;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .course-meta-line {
+    font-size: 12px;
+    color: var(--ink-4);
+    margin-bottom: 8px;
+  }
+
+  .course-meta-line span + span::before {
+    content: '·';
+    margin: 0 6px;
+    color: var(--ink-5);
+  }
+
+  .course-why {
+    font-size: 13px;
+    color: var(--ink-3);
+    line-height: 1.55;
+    margin-bottom: 8px;
+    font-style: italic;
+  }
+
+  .course-why::before {
+    content: '"';
+    color: var(--rust);
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    margin-right: 2px;
+    font-style: normal;
+  }
+
+  .course-why::after {
+    content: '"';
+    color: var(--rust);
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    margin-left: 2px;
+    font-style: normal;
+  }
+
+  .course-fills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .skill-pill {
+    font-size: 11px;
+    padding: 2px 8px;
+    background: var(--moss-bg);
+    color: var(--moss-deep);
+    border-radius: 99px;
+    font-weight: 500;
+  }
+
+  .skill-pill.warn {
+    background: var(--ochre-bg);
+    color: #92400e;
+  }
+
+  .course-action {
+    padding-top: 2px;
+  }
+
+  .add-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: var(--paper);
+    border: 1px solid var(--border-strong);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: all 0.15s;
+    color: var(--ink-3);
+  }
+
+  .add-btn:hover { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+  .add-btn.added { background: var(--moss-deep); color: var(--cream); border-color: var(--moss-deep); }
+
+  /* Skill gap simple bars */
+  .gap-row {
+    margin-bottom: 14px;
+  }
+  .gap-row:last-child { margin-bottom: 0; }
+
+  .gap-head {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 12.5px;
+  }
+
+  .gap-name { color: var(--ink); font-weight: 500; }
+  .gap-val { color: var(--ink-4); font-family: 'JetBrains Mono', monospace; font-size: 11.5px; }
+
+  .gap-track {
+    height: 6px;
+    background: var(--paper-2);
+    border-radius: 99px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .gap-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .gap-fill.critical { background: var(--rust); }
+  .gap-fill.warn { background: var(--ochre); }
+  .gap-fill.ok { background: var(--moss-deep); }
+
+  .gap-target {
+    position: absolute;
+    top: -2px;
+    height: 10px;
+    width: 2px;
+    background: var(--ink);
+    border-radius: 1px;
+  }
+
+  /* Path */
+  .path-section {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 26px 28px 28px;
+  }
+
+  .path-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-top: 20px;
+    position: relative;
+  }
+
+  .path-grid::before {
+    content: '';
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    right: 14px;
+    height: 1px;
+    background: var(--border-strong);
+  }
+
+  .path-step {
+    position: relative;
+    padding-top: 32px;
+  }
+
+  .path-marker {
+    position: absolute;
+    top: 9px;
+    left: 0;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--cream);
+    border: 2px solid var(--border-strong);
+  }
+
+  .path-step.now .path-marker { background: var(--rust); border-color: var(--rust); }
+
+  .path-sem {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 36, 'wght' 600;
+    font-size: 16px;
+    margin-bottom: 2px;
+  }
+  .path-step.now .path-sem { color: var(--rust); }
+
+  .path-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--ink-4);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+  }
+
+  .path-course {
+    padding: 8px 0;
+    border-top: 1px dashed var(--border);
+    font-size: 12.5px;
+    color: var(--ink-2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .path-course .cr {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--ink-4);
+  }
+
+  .save-bar {
+    margin-top: 28px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+    padding: 22px;
+    background: var(--cream-2);
+    border: 1px dashed var(--border-strong);
+    border-radius: 14px;
+  }
+
+  .save-bar-text {
+    font-size: 13.5px;
+    color: var(--ink-3);
+    margin-right: auto;
+  }
+
+  .save-bar-text strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* Responsive */
+  @media (max-width: 980px) {
+    .welcome { grid-template-columns: 1fr; gap: 40px; }
+    .careers { grid-template-columns: repeat(2, 1fr); }
+    .result-grid { grid-template-columns: 1fr; }
+    .path-grid { grid-template-columns: 1fr 1fr; }
+    .path-grid::before { display: none; }
+    .progress { display: none; }
+  }
+
+  @media (max-width: 640px) {
+    .topbar-inner, .stage { padding: 16px 20px; }
+    .step { padding: 32px 0 60px; }
+    .careers { grid-template-columns: 1fr; }
+    .path-grid { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .welcome-illust { padding: 24px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* ============== Dashboard Nav (only on dashboard) ============== */
+  .dash-nav {
+    display: none;
+    align-items: center;
+    gap: 4px;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 4px;
+  }
+  .dash-nav-link {
+    padding: 7px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-3);
+    border-radius: 99px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .dash-nav-link:hover { color: var(--ink); background: var(--cream-2); }
+  .dash-nav-link.active { background: var(--ink); color: var(--paper); }
+
+  body[data-step="6"] .progress { display: none; }
+  body[data-step="6"] .dash-nav { display: flex; }
+  body[data-step="6"] { background: var(--paper-2); }
+
+  /* ============== Dashboard Layout ============== */
+  .dash {
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  .dash-hero {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 34px 40px;
+    margin-bottom: 22px;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 36px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dash-hero::after {
+    content: '';
+    position: absolute;
+    right: -120px;
+    top: -120px;
+    width: 360px;
+    height: 360px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, var(--rust-bg), transparent);
+    pointer-events: none;
+  }
+
+  .dash-hero-left { position: relative; z-index: 1; }
+  .dash-hero-right { position: relative; z-index: 1; }
+
+  .dash-greeting {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--ink-4);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .dash-greeting .live-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--moss);
+    box-shadow: 0 0 0 0 rgba(101, 163, 13, 0.5);
+    animation: livePulse 2s infinite;
+  }
+
+  @keyframes livePulse {
+    0% { box-shadow: 0 0 0 0 rgba(101, 163, 13, 0.5); }
+    70% { box-shadow: 0 0 0 7px rgba(101, 163, 13, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(101, 163, 13, 0); }
+  }
+
+  .dash-progress {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-soft);
+  }
+
+  .dash-progress-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+  }
+
+  .dash-progress-label {
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+
+  .dash-progress-val {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 72, 'wght' 600;
+    font-size: 22px;
+    color: var(--ink);
+  }
+
+  .dash-progress-bar {
+    height: 8px;
+    background: var(--paper-2);
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+
+  .dash-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--rust) 0%, var(--ochre) 100%);
+    border-radius: 99px;
+    transition: width 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .dash-progress-step {
+    font-size: 12px;
+    color: var(--ink-4);
+  }
+
+  .dash-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .dash-stat {
+    padding: 16px 18px;
+    background: var(--paper);
+    border: 1px solid var(--border-soft);
+    border-radius: 14px;
+  }
+
+  .dash-stat-lbl {
+    font-size: 11px;
+    color: var(--ink-4);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  .dash-stat-val {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 72, 'wght' 600;
+    font-size: 30px;
+    color: var(--ink);
+    line-height: 1;
+    letter-spacing: -0.015em;
+  }
+
+  .dash-stat-val .unit {
+    font-size: 14px;
+    color: var(--ink-4);
+    font-weight: 500;
+    font-variation-settings: 'opsz' 36, 'wght' 500;
+  }
+
+  .dash-stat-foot {
+    font-size: 11.5px;
+    color: var(--moss-deep);
+    margin-top: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .dash-stat-foot.flat { color: var(--ink-4); }
+  .dash-stat-foot.warn { color: var(--ochre); }
+
+  /* ============== Dashboard Grid ============== */
+  .dash-grid-3 {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 22px;
+  }
+
+  .dash-panel {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px 24px;
+  }
+
+  .dash-panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+
+  .dash-panel-title {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 36, 'wght' 600;
+    font-size: 17px;
+    color: var(--ink);
+  }
+
+  .dash-panel-sub {
+    font-size: 12px;
+    color: var(--ink-4);
+    margin-top: 2px;
+  }
+
+  .dash-panel-action {
+    font-size: 12px;
+    color: var(--rust);
+    text-decoration: none;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  .dash-panel-action:hover { text-decoration: underline; }
+
+  /* This-term course list */
+  .term-course {
+    display: grid;
+    grid-template-columns: 22px 1fr auto;
+    gap: 12px;
+    padding: 12px 0;
+    border-top: 1px solid var(--border-soft);
+    align-items: center;
+  }
+  .term-course:first-of-type { border-top: none; padding-top: 4px; }
+
+  .term-course-tick {
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    border: 1.5px solid var(--border-strong);
+    background: var(--paper);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: all 0.15s;
+  }
+
+  .term-course.done .term-course-tick {
+    background: var(--moss-deep);
+    border-color: var(--moss-deep);
+  }
+
+  .term-course-name {
+    font-size: 13.5px;
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .term-course-meta {
+    font-size: 11.5px;
+    color: var(--ink-4);
+    margin-top: 2px;
+  }
+
+  .term-course.done .term-course-name {
+    color: var(--ink-4);
+    text-decoration: line-through;
+  }
+
+  .term-course-status {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 99px;
+    font-weight: 500;
+  }
+
+  .status-active { background: var(--rust-bg); color: var(--rust-deep); }
+  .status-todo { background: var(--paper-2); color: var(--ink-4); }
+  .status-done { background: var(--moss-bg); color: var(--moss-deep); }
+
+  /* Skill growth */
+  .skill-grow {
+    margin-bottom: 14px;
+  }
+  .skill-grow:last-child { margin-bottom: 0; }
+
+  .skill-grow-head {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 12.5px;
+  }
+
+  .skill-grow-name { color: var(--ink); font-weight: 500; }
+
+  .skill-grow-delta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--moss-deep);
+    background: var(--moss-bg);
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+
+  .skill-grow-delta.flat {
+    color: var(--ink-4);
+    background: var(--paper-2);
+  }
+
+  .skill-grow-track {
+    height: 5px;
+    background: var(--paper-2);
+    border-radius: 99px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .skill-grow-prev {
+    position: absolute;
+    inset: 0 auto 0 0;
+    background: var(--border-strong);
+    border-radius: 99px;
+  }
+
+  .skill-grow-curr {
+    position: absolute;
+    inset: 0 auto 0 0;
+    background: var(--rust);
+    border-radius: 99px;
+  }
+
+  /* Action items */
+  .action-item {
+    padding: 14px 0;
+    border-top: 1px solid var(--border-soft);
+  }
+  .action-item:first-of-type { border-top: none; padding-top: 4px; }
+
+  .action-item-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .action-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    background: var(--paper-2);
+    display: grid;
+    place-items: center;
+    color: var(--ink-3);
+    flex-shrink: 0;
+  }
+
+  .action-icon.urgent { background: var(--rust-bg); color: var(--rust-deep); }
+  .action-icon.tip { background: var(--moss-bg); color: var(--moss-deep); }
+
+  .action-title {
+    font-size: 13.5px;
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .action-body {
+    font-size: 12.5px;
+    color: var(--ink-3);
+    line-height: 1.55;
+    padding-left: 36px;
+  }
+
+  .action-body .deadline {
+    color: var(--rust-deep);
+    font-weight: 600;
+  }
+
+  /* Market pulse */
+  .pulse-section {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 26px 28px;
+    margin-bottom: 22px;
+  }
+
+  .pulse-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-top: 18px;
+  }
+
+  .pulse-card {
+    padding: 16px;
+    background: var(--paper);
+    border: 1px solid var(--border-soft);
+    border-radius: 12px;
+  }
+
+  .pulse-card-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-4);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  .pulse-card-name {
+    font-family: 'Fraunces', serif;
+    font-variation-settings: 'opsz' 36, 'wght' 600;
+    font-size: 16px;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .pulse-card-delta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .pulse-card-delta.up { color: var(--moss-deep); }
+  .pulse-card-delta.down { color: var(--rust); }
+
+  .pulse-card-spark {
+    margin-top: 10px;
+    height: 28px;
+  }
+
+  .pulse-card-spark svg { width: 100%; height: 100%; }
+
+  /* Activity feed */
+  .activity-section {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 26px 28px;
+    margin-bottom: 22px;
+  }
+
+  .activity-list { margin-top: 18px; }
+
+  .activity {
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    gap: 14px;
+    padding: 14px 0;
+    border-top: 1px solid var(--border-soft);
+    align-items: flex-start;
+  }
+
+  .activity:first-of-type { border-top: none; padding-top: 4px; }
+
+  .activity-marker {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    color: var(--cream);
+  }
+
+  .activity-marker.book { background: var(--rust); }
+  .activity-marker.skill { background: var(--moss-deep); }
+  .activity-marker.market { background: var(--ochre); }
+  .activity-marker.target { background: var(--ink); }
+
+  .activity-body {
+    font-size: 13.5px;
+    color: var(--ink-2);
+    line-height: 1.5;
+  }
+
+  .activity-body strong { color: var(--ink); font-weight: 600; }
+  .activity-body .em { color: var(--rust); font-weight: 500; }
+
+  .activity-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-4);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 980px) {
+    .dash-hero { grid-template-columns: 1fr; padding: 28px; }
+    .dash-grid-3 { grid-template-columns: 1fr; }
+    .pulse-grid { grid-template-columns: 1fr 1fr; }
+    .dash-nav { display: none !important; }
+  }
+
+  @media (max-width: 640px) {
+    .pulse-grid { grid-template-columns: 1fr; }
+    .dash-stats { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================ TOP BAR ================ -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="logo" data-go="1">
+      <div class="logo-mark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 12h4l3-9 4 18 3-9h6"/>
+        </svg>
+      </div>
+      <span class="logo-text">SkillPath</span>
+    </a>
+
+    <div class="progress" id="progress">
+      <div class="progress-step active" data-go="1"><span class="progress-dot">1</span><span>开始</span></div>
+      <div class="progress-line"></div>
+      <div class="progress-step" data-go="2"><span class="progress-dot">2</span><span>你是谁</span></div>
+      <div class="progress-line"></div>
+      <div class="progress-step" data-go="3"><span class="progress-dot">3</span><span>会什么</span></div>
+      <div class="progress-line"></div>
+      <div class="progress-step" data-go="4"><span class="progress-dot">4</span><span>想去哪</span></div>
+      <div class="progress-line"></div>
+      <div class="progress-step" data-go="5"><span class="progress-dot">5</span><span>你的规划</span></div>
+    </div>
+
+    <nav class="dash-nav" id="dashNav">
+      <a class="dash-nav-link active">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        主面板
+      </a>
+      <a class="dash-nav-link">我的课</a>
+      <a class="dash-nav-link">技能成长</a>
+      <a class="dash-nav-link">职业目标</a>
+    </nav>
+
+    <div style="display: flex; align-items: center; gap: 6px;">
+      <a class="help-link" href="#">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        帮助
+      </a>
+      <a class="help-link" href="#" id="restartLink" style="display: none;" data-go="1">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9"/><polyline points="3 4 3 12 11 12"/></svg>
+        重做规划
+      </a>
+    </div>
+  </div>
+</header>
+
+<main class="stage">
+
+  <!-- ============== STEP 1: WELCOME ============== -->
+  <section class="step active" data-step="1">
+    <div class="welcome">
+      <div>
+        <span class="eyebrow">SkillPath · 学生职业规划</span>
+        <h1 class="display">下一门<br/>该选<em>什么课</em>?</h1>
+        <p class="lead">不用再凭感觉。告诉我们你想成为什么样的人,SkillPath 会基于真实岗位需求,告诉你<strong style="color: var(--ink);">下一学期该上哪门课,以及为什么</strong>。</p>
+
+        <div class="welcome-cta">
+          <button class="btn btn-primary btn-large" data-go="2">
+            开始规划
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+          <button class="btn btn-ghost btn-large" data-go="5">看示例</button>
+        </div>
+
+        <div class="welcome-meta">
+          <div class="meta-avatars">
+            <div class="meta-avatar">L</div>
+            <div class="meta-avatar">Z</div>
+            <div class="meta-avatar">M</div>
+            <div class="meta-avatar">+</div>
+          </div>
+          <div class="meta-text">
+            已有 <strong>2,847 名同学</strong>用 SkillPath 找到了他们的下一门课
+          </div>
+        </div>
+      </div>
+
+      <div class="welcome-side">
+        <div class="welcome-illust">
+          <span class="illust-corner tl">// QUOTE</span>
+          <span class="illust-corner br">SP · 01</span>
+          <div class="illust-content">
+            <p class="illust-quote">"原来我以为我要再学一门数据库,<br/>结果它告诉我应该先补<span class="underline">统计学</span> —— <br/>第二天我就报了那门课。"</p>
+            <p class="illust-author"><strong>Liu Zheng</strong> · 大三 · 计算机科学</p>
+          </div>
+        </div>
+
+        <div class="welcome-features">
+          <div class="welcome-feature">
+            <div class="welcome-feature-num">01</div>
+            <div class="welcome-feature-text">
+              <strong>不到 3 分钟</strong>
+              <span>四个简单问题,你就能拿到一份属于你自己的选课建议。</span>
+            </div>
+          </div>
+          <div class="welcome-feature">
+            <div class="welcome-feature-num">02</div>
+            <div class="welcome-feature-text">
+              <strong>基于真实就业市场</strong>
+              <span>SkillPath 持续看 120 万条岗位信息,告诉你市场最需要什么。</span>
+            </div>
+          </div>
+          <div class="welcome-feature">
+            <div class="welcome-feature-num">03</div>
+            <div class="welcome-feature-text">
+              <strong>讲人话的推荐理由</strong>
+              <span>每门课都解释为什么推荐你 —— 不是黑箱,你说了算。</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== STEP 2: PROFILE ============== -->
+  <section class="step" data-step="2">
+    <div class="step-shell">
+      <span class="eyebrow">第 1 步 · 共 4 步</span>
+      <h2 class="headline">先认识一下,<em>你是谁</em>?</h2>
+      <p class="lead-sm">这些信息只会用来为你计算合适的课程。你可以随时回来修改。</p>
+
+      <div class="form-section">
+        <label class="form-label">你的名字</label>
+        <input class="form-input" type="text" value="Liu Zheng / 刘正" placeholder="比如 张同学"/>
+      </div>
+
+      <div class="form-section">
+        <div class="form-row">
+          <div>
+            <label class="form-label">学校</label>
+            <input class="form-input" type="text" value="上海大学" />
+          </div>
+          <div>
+            <label class="form-label">专业</label>
+            <input class="form-input" type="text" value="计算机科学" />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <label class="form-label">你现在在哪个年级?</label>
+        <div class="pick-row" data-pick="grade">
+          <button class="pick-chip" type="button">大一</button>
+          <button class="pick-chip" type="button">大二</button>
+          <button class="pick-chip on" type="button">大三</button>
+          <button class="pick-chip" type="button">大四</button>
+          <button class="pick-chip" type="button">研究生</button>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <label class="form-label">你大概的 GPA?</label>
+        <div class="form-hint">仅用于挑选合适难度的课,我们不评判 ✿</div>
+        <div class="pick-row" data-pick="gpa">
+          <button class="pick-chip" type="button">3.0 以下</button>
+          <button class="pick-chip" type="button">3.0 – 3.5</button>
+          <button class="pick-chip on" type="button">3.5 – 3.8</button>
+          <button class="pick-chip" type="button">3.8 以上</button>
+          <button class="pick-chip" type="button">不想说</button>
+        </div>
+      </div>
+
+      <div class="step-footer">
+        <button class="btn btn-ghost" data-go="1">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          上一步
+        </button>
+        <span class="footer-hint">只剩 3 步 · 快好了</span>
+        <button class="btn btn-primary" data-go="3">
+          下一步
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== STEP 3: SKILLS ============== -->
+  <section class="step" data-step="3">
+    <div class="step-shell">
+      <span class="eyebrow">第 2 步 · 共 4 步</span>
+      <h2 class="headline">你<em>已经会</em>什么?</h2>
+      <p class="lead-sm">点选你比较熟悉的内容(可以多选)。不确定的就别选,我们会假设你需要从头学。</p>
+
+      <div class="skills-group">
+        <div class="skills-group-title">编程语言 <span class="count" id="cnt-lang">0 / 6</span></div>
+        <div class="pick-row" data-skill-group="lang">
+          <button class="pick-chip on" type="button">Python</button>
+          <button class="pick-chip" type="button">Java</button>
+          <button class="pick-chip" type="button">JavaScript</button>
+          <button class="pick-chip" type="button">C / C++</button>
+          <button class="pick-chip" type="button">Go</button>
+          <button class="pick-chip" type="button">Rust</button>
+        </div>
+      </div>
+
+      <div class="skills-group">
+        <div class="skills-group-title">基础知识 <span class="count" id="cnt-basic">0 / 6</span></div>
+        <div class="pick-row" data-skill-group="basic">
+          <button class="pick-chip on" type="button">数据结构</button>
+          <button class="pick-chip on" type="button">算法</button>
+          <button class="pick-chip" type="button">操作系统</button>
+          <button class="pick-chip" type="button">计算机网络</button>
+          <button class="pick-chip on" type="button">数据库 / SQL</button>
+          <button class="pick-chip" type="button">编译原理</button>
+        </div>
+      </div>
+
+      <div class="skills-group">
+        <div class="skills-group-title">数学与统计 <span class="count" id="cnt-math">0 / 5</span></div>
+        <div class="pick-row" data-skill-group="math">
+          <button class="pick-chip on" type="button">高等数学</button>
+          <button class="pick-chip on" type="button">线性代数</button>
+          <button class="pick-chip" type="button">概率论</button>
+          <button class="pick-chip" type="button">统计学</button>
+          <button class="pick-chip" type="button">最优化</button>
+        </div>
+      </div>
+
+      <div class="skills-group">
+        <div class="skills-group-title">进阶方向 <span class="count" id="cnt-adv">0 / 6</span></div>
+        <div class="pick-row" data-skill-group="adv">
+          <button class="pick-chip" type="button">机器学习</button>
+          <button class="pick-chip" type="button">深度学习</button>
+          <button class="pick-chip" type="button">大数据 / Spark</button>
+          <button class="pick-chip" type="button">前端开发</button>
+          <button class="pick-chip" type="button">后端 / 分布式</button>
+          <button class="pick-chip" type="button">云计算</button>
+        </div>
+      </div>
+
+      <div class="step-footer">
+        <button class="btn btn-ghost" data-go="2">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          上一步
+        </button>
+        <span class="footer-hint" id="skills-hint">已选 <strong>6</strong> 项 · 不确定就别选</span>
+        <button class="btn btn-primary" data-go="4">
+          下一步
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== STEP 4: CAREER ============== -->
+  <section class="step" data-step="4">
+    <div class="step-shell" style="max-width: 980px;">
+      <span class="eyebrow">第 3 步 · 共 4 步</span>
+      <h2 class="headline">你毕业后,<em>想成为什么</em>?</h2>
+      <p class="lead-sm">选一个你最感兴趣的方向。我们会根据这个目标 + 你刚才填的信息,给你一份个性化建议。可以下一步还改。</p>
+
+      <div class="careers" id="careers">
+        <div class="career on" data-career="ml">
+          <div class="career-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="career-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          </div>
+          <div class="career-name">机器学习工程师</div>
+          <div class="career-salary">¥ 28K – 45K / 月</div>
+          <div class="career-meta">做 AI 模型、推荐系统、智能应用。市场需求最大的方向之一。</div>
+          <div class="career-tags"><span>Python</span><span>数学</span><span>大数据</span><span>前景 ★★★★★</span></div>
+        </div>
+
+        <div class="career" data-career="ds">
+          <div class="career-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="career-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <div class="career-name">数据科学家</div>
+          <div class="career-salary">¥ 25K – 40K / 月</div>
+          <div class="career-meta">用数据回答业务问题,做实验、报告、A/B 测试。</div>
+          <div class="career-tags"><span>统计</span><span>SQL</span><span>可视化</span></div>
+        </div>
+
+        <div class="career" data-career="be">
+          <div class="career-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="career-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>
+          </div>
+          <div class="career-name">后端工程师</div>
+          <div class="career-salary">¥ 22K – 38K / 月</div>
+          <div class="career-meta">写服务器、数据库、做架构。最经典的程序员岗位。</div>
+          <div class="career-tags"><span>Java / Go</span><span>分布式</span><span>数据库</span></div>
+        </div>
+
+        <div class="career" data-career="fe">
+          <div class="career-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="career-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </div>
+          <div class="career-name">前端工程师</div>
+          <div class="career-salary">¥ 18K – 32K / 月</div>
+          <div class="career-meta">做网页、App、用户能直接看到的东西,讲究审美。</div>
+          <div class="career-tags"><span>JS / TS</span><span>React</span><span>设计感</span></div>
+        </div>
+
+        <div class="career" data-career="da">
+          <div class="career-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="career-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+          </div>
+          <div class="career-name">数据分析师</div>
+          <div class="career-salary">¥ 15K – 28K / 月</div>
+          <div class="career-meta">用 SQL + 表格 + 仪表盘看清业务发生了什么。入门友好。</div>
+          <div class="career-tags"><span>SQL</span><span>Excel</span><span>BI 工具</span></div>
+        </div>
+
+        <div class="career" data-career="ai">
+          <div class="career-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="career-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11.24V7.5a2.5 2.5 0 0 1 5 0v3.74"/><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 14h6M9 17h6"/></svg>
+          </div>
+          <div class="career-name">AI 研究员</div>
+          <div class="career-salary">¥ 30K – 60K / 月</div>
+          <div class="career-meta">做前沿研究、发论文。一般需要读研或读博。</div>
+          <div class="career-tags"><span>数学</span><span>科研</span><span>论文</span></div>
+        </div>
+      </div>
+
+      <div class="step-footer">
+        <button class="btn btn-ghost" data-go="3">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          上一步
+        </button>
+        <span class="footer-hint" id="career-hint">已选: <strong id="picked-career">机器学习工程师</strong></span>
+        <button class="btn btn-primary" data-go="5">
+          看我的规划
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== STEP 5: RESULT ============== -->
+  <section class="step" data-step="5">
+    <!-- Result Hero -->
+    <div class="result-hero">
+      <div class="result-hero-content">
+        <div class="result-meta">为 Liu Zheng · 大三 · 计算机科学 · 生成于今天</div>
+        <h2 class="headline" style="margin-bottom: 10px;">你离<em>机器学习工程师</em><br/>还差<em>这几门课</em>。</h2>
+        <p class="lead-sm" style="margin-bottom: 0;">我们分析了 120 万条岗位描述,对比了你现在的能力。下面是为你量身定制的建议 —— 一份你可以直接去选课系统里报的清单。</p>
+
+        <div class="result-match">
+          <div class="result-match-val">87%</div>
+          <div class="result-match-lbl">
+            <strong>这条路适合你</strong><br/>
+            如果你按下面的规划走完,毕业时你的画像就能匹配市场上 95% 的 ML 工程师岗位需求。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2-column: Courses + Skill Gap -->
+    <div class="result-grid">
+      <!-- Courses -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title">推荐你下学期上这几门</div>
+            <div class="panel-sub">按重要程度排序 · 点 + 加入我的计划</div>
+          </div>
+        </div>
+
+        <div class="course">
+          <div class="course-rank">01</div>
+          <div class="course-body">
+            <div class="course-title">机器学习基础</div>
+            <div class="course-meta-line"><span>3 学分</span><span>48 课时</span><span>张老师</span><span>★ 4.8 (230)</span></div>
+            <div class="course-why">这是你最缺的能力。市场上 89% 的 ML 岗位都要求这个,而你现在还没碰过。先修条件你都满足了 —— 直接选。</div>
+            <div class="course-fills">
+              <span class="skill-pill">补齐 · 机器学习</span>
+              <span class="skill-pill">补齐 · 统计基础</span>
+            </div>
+          </div>
+          <div class="course-action"><button class="add-btn" data-add><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button></div>
+        </div>
+
+        <div class="course">
+          <div class="course-rank">02</div>
+          <div class="course-body">
+            <div class="course-title">大数据分析</div>
+            <div class="course-meta-line"><span>4 学分</span><span>64 课时</span><span>刘老师</span><span>★ 4.9 (187)</span></div>
+            <div class="course-why">ML 工程师不只是会调模型,你得能处理"大"数据。这门课教你怎么在分布式系统上跑数据 —— 大厂面试必考。</div>
+            <div class="course-fills">
+              <span class="skill-pill">补齐 · 大数据 / Spark</span>
+              <span class="skill-pill warn">建议同期选</span>
+            </div>
+          </div>
+          <div class="course-action"><button class="add-btn" data-add><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="5 12 19 12"/></svg></button></div>
+        </div>
+
+        <div class="course">
+          <div class="course-rank">03</div>
+          <div class="course-body">
+            <div class="course-title">深度学习与最优化</div>
+            <div class="course-meta-line"><span>4 学分</span><span>64 课时</span><span>王老师</span><span>★ 4.7 (142)</span></div>
+            <div class="course-why">你想做的所有酷的 AI 应用,本质上都是深度学习。建议大三下或大四上学,先把机器学习基础学完。</div>
+            <div class="course-fills">
+              <span class="skill-pill">补齐 · 深度学习</span>
+              <span class="skill-pill warn">建议下学期</span>
+            </div>
+          </div>
+          <div class="course-action"><button class="add-btn" data-add><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button></div>
+        </div>
+
+        <div class="course">
+          <div class="course-rank">04</div>
+          <div class="course-body">
+            <div class="course-title">自然语言处理</div>
+            <div class="course-meta-line"><span>3 学分</span><span>48 课时</span><span>陈老师</span><span>★ 4.8 (168)</span></div>
+            <div class="course-why">这是当下最热的方向 —— ChatGPT 和大语言模型都在这里。最近 30 天相关岗位需求涨了 89%,选了不亏。</div>
+            <div class="course-fills">
+              <span class="skill-pill">加分 · NLP</span>
+              <span class="skill-pill warn">建议大四</span>
+            </div>
+          </div>
+          <div class="course-action"><button class="add-btn" data-add><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button></div>
+        </div>
+      </div>
+
+      <!-- Skill Gap -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title">你和 ML 工程师之间的距离</div>
+            <div class="panel-sub">黑线 = 岗位要求 · 颜色条 = 你现在</div>
+          </div>
+        </div>
+
+        <div class="gap-row">
+          <div class="gap-head"><span class="gap-name">机器学习</span><span class="gap-val">差很多</span></div>
+          <div class="gap-track"><div class="gap-fill critical" style="width: 20%;"></div><div class="gap-target" style="left: 90%;"></div></div>
+        </div>
+        <div class="gap-row">
+          <div class="gap-head"><span class="gap-name">深度学习</span><span class="gap-val">差很多</span></div>
+          <div class="gap-track"><div class="gap-fill critical" style="width: 10%;"></div><div class="gap-target" style="left: 90%;"></div></div>
+        </div>
+        <div class="gap-row">
+          <div class="gap-head"><span class="gap-name">大数据 / Spark</span><span class="gap-val">差不少</span></div>
+          <div class="gap-track"><div class="gap-fill warn" style="width: 20%;"></div><div class="gap-target" style="left: 70%;"></div></div>
+        </div>
+        <div class="gap-row">
+          <div class="gap-head"><span class="gap-name">统计学</span><span class="gap-val">差一些</span></div>
+          <div class="gap-track"><div class="gap-fill warn" style="width: 30%;"></div><div class="gap-target" style="left: 70%;"></div></div>
+        </div>
+        <div class="gap-row">
+          <div class="gap-head"><span class="gap-name">数学基础</span><span class="gap-val">还行</span></div>
+          <div class="gap-track"><div class="gap-fill warn" style="width: 50%;"></div><div class="gap-target" style="left: 70%;"></div></div>
+        </div>
+        <div class="gap-row">
+          <div class="gap-head"><span class="gap-name">Python</span><span class="gap-val">已经不错</span></div>
+          <div class="gap-track"><div class="gap-fill ok" style="width: 70%;"></div><div class="gap-target" style="left: 80%;"></div></div>
+        </div>
+        <div class="gap-row">
+          <div class="gap-head"><span class="gap-name">SQL</span><span class="gap-val">已经不错</span></div>
+          <div class="gap-track"><div class="gap-fill ok" style="width: 60%;"></div><div class="gap-target" style="left: 60%;"></div></div>
+        </div>
+
+        <div style="margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border-soft); font-size: 12.5px; color: var(--ink-3); line-height: 1.55;">
+          <strong style="color: var(--ink);">坦白说:</strong> 你的编程基础已经够了,但 ML 这块还是一片空白 —— 这就是为什么 #1 是机器学习基础,而不是更花哨的课程。
+        </div>
+      </div>
+    </div>
+
+    <!-- Path Timeline -->
+    <div class="path-section">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">未来四个学期 · 完整路径</div>
+          <div class="panel-sub">从现在到毕业 · 总 38 学分</div>
+        </div>
+        <button class="btn btn-ghost" style="padding: 8px 14px; font-size: 12.5px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          导出 PDF
+        </button>
+      </div>
+
+      <div class="path-grid">
+        <div class="path-step now">
+          <div class="path-marker"></div>
+          <div class="path-sem">第 5 学期</div>
+          <div class="path-date">2026 春 · 现在</div>
+          <div class="path-course">机器学习基础 <span class="cr">3</span></div>
+          <div class="path-course">大数据分析 <span class="cr">4</span></div>
+          <div class="path-course">线性代数 II <span class="cr">3</span></div>
+        </div>
+
+        <div class="path-step">
+          <div class="path-marker"></div>
+          <div class="path-sem">第 6 学期</div>
+          <div class="path-date">2026 秋</div>
+          <div class="path-course">深度学习 <span class="cr">4</span></div>
+          <div class="path-course">统计学 <span class="cr">3</span></div>
+          <div class="path-course">云计算 <span class="cr">2</span></div>
+        </div>
+
+        <div class="path-step">
+          <div class="path-marker"></div>
+          <div class="path-sem">第 7 学期</div>
+          <div class="path-date">2027 春</div>
+          <div class="path-course">自然语言处理 <span class="cr">3</span></div>
+          <div class="path-course">MLOps 实战 <span class="cr">3</span></div>
+          <div class="path-course">最优化 <span class="cr">3</span></div>
+        </div>
+
+        <div class="path-step">
+          <div class="path-marker"></div>
+          <div class="path-sem">第 8 学期</div>
+          <div class="path-date">2027 秋</div>
+          <div class="path-course">毕业设计 <span class="cr">4</span></div>
+          <div class="path-course">ML 工程实践 <span class="cr">3</span></div>
+          <div class="path-course">企业实习 <span class="cr">6</span></div>
+        </div>
+      </div>
+
+      <div class="save-bar">
+        <div class="save-bar-text">
+          <strong>觉得这份规划合理?</strong>&nbsp; 保存到我的计划,选课季提前提醒你 ✦
+        </div>
+        <button class="btn btn-ghost" data-go="4">改一下</button>
+        <button class="btn btn-rust" data-go="6">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          保存,进入主面板
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="step-footer" style="margin-top: 28px;">
+      <button class="btn btn-ghost" data-go="4">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        改一下目标
+      </button>
+      <span class="footer-hint">SkillPath · 在每个迷茫的选课季陪你做决定</span>
+      <button class="btn btn-primary" data-go="1">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9"/><polyline points="3 4 3 12 11 12"/></svg>
+        重新开始
+      </button>
+    </div>
+  </section>
+
+  <!-- ============== STEP 6: DASHBOARD ============== -->
+  <section class="step" data-step="6">
+    <div class="dash">
+
+      <!-- Hero -->
+      <div class="dash-hero">
+        <div class="dash-hero-left">
+          <div class="dash-greeting">
+            <span class="live-dot"></span>
+            下午好,Liu Zheng · 5 月 22 日 · 星期四
+          </div>
+          <h2 class="display" style="font-size: clamp(32px, 4.5vw, 50px); margin-bottom: 14px;">
+            正在向 <em>机器学习工程师</em><br/>稳步前进。
+          </h2>
+          <p class="lead-sm" style="margin-bottom: 0;">
+            你已经修完 18 门课,还差 12 门到达目标。下学期选课开放还有 <strong style="color: var(--ink);">14 天</strong>,你已经选好了 3 门。
+          </p>
+
+          <div class="dash-progress">
+            <div class="dash-progress-row">
+              <span class="dash-progress-label">向 ML 工程师整体进度</span>
+              <span class="dash-progress-val">62<span style="font-size: 14px; color: var(--ink-4); font-weight: 500;">%</span></span>
+            </div>
+            <div class="dash-progress-bar"><div class="dash-progress-fill" style="width: 62%;"></div></div>
+            <div class="dash-progress-step">从 32% 起步 → 完成本学期推荐课程后可达 <strong style="color: var(--rust); font-weight: 600;">78%</strong></div>
+          </div>
+        </div>
+
+        <div class="dash-hero-right">
+          <div class="dash-stats">
+            <div class="dash-stat">
+              <div class="dash-stat-lbl">本学期</div>
+              <div class="dash-stat-val">3<span class="unit"> 门</span></div>
+              <div class="dash-stat-foot">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                已选课完成
+              </div>
+            </div>
+            <div class="dash-stat">
+              <div class="dash-stat-lbl">已修</div>
+              <div class="dash-stat-val">18<span class="unit"> / 30</span></div>
+              <div class="dash-stat-foot flat">总学分 62 / 120</div>
+            </div>
+            <div class="dash-stat">
+              <div class="dash-stat-lbl">技能匹配</div>
+              <div class="dash-stat-val">87<span class="unit">%</span></div>
+              <div class="dash-stat-foot">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+                本月 +12%
+              </div>
+            </div>
+            <div class="dash-stat">
+              <div class="dash-stat-lbl">距毕业</div>
+              <div class="dash-stat-val">4<span class="unit"> 学期</span></div>
+              <div class="dash-stat-foot warn">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                约 540 天
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3-column grid -->
+      <div class="dash-grid-3">
+        <!-- This term courses -->
+        <div class="dash-panel">
+          <div class="dash-panel-head">
+            <div>
+              <div class="dash-panel-title">本学期课程</div>
+              <div class="dash-panel-sub">2026 春季 · 进行中</div>
+            </div>
+            <a class="dash-panel-action">全部 →</a>
+          </div>
+
+          <div class="term-course done">
+            <div class="term-course-tick"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div>
+              <div class="term-course-name">线性代数 II</div>
+              <div class="term-course-meta">3 学分 · 周三 14:00 · 已结课</div>
+            </div>
+            <span class="term-course-status status-done">已完成</span>
+          </div>
+
+          <div class="term-course">
+            <div class="term-course-tick"></div>
+            <div>
+              <div class="term-course-name">机器学习基础</div>
+              <div class="term-course-meta">3 学分 · 周一 / 周四 · 张老师</div>
+            </div>
+            <span class="term-course-status status-active">进行中 · 8/16</span>
+          </div>
+
+          <div class="term-course">
+            <div class="term-course-tick"></div>
+            <div>
+              <div class="term-course-name">大数据分析</div>
+              <div class="term-course-meta">4 学分 · 周二 / 周五 · 刘老师</div>
+            </div>
+            <span class="term-course-status status-active">进行中 · 7/16</span>
+          </div>
+
+          <div class="term-course">
+            <div class="term-course-tick"></div>
+            <div>
+              <div class="term-course-name">英语口语 III</div>
+              <div class="term-course-meta">2 学分 · 周三 16:00</div>
+            </div>
+            <span class="term-course-status status-active">进行中</span>
+          </div>
+        </div>
+
+        <!-- Skill growth -->
+        <div class="dash-panel">
+          <div class="dash-panel-head">
+            <div>
+              <div class="dash-panel-title">技能成长</div>
+              <div class="dash-panel-sub">最近 30 天</div>
+            </div>
+            <a class="dash-panel-action">详情 →</a>
+          </div>
+
+          <div class="skill-grow">
+            <div class="skill-grow-head">
+              <span class="skill-grow-name">机器学习</span>
+              <span class="skill-grow-delta">+3 级</span>
+            </div>
+            <div class="skill-grow-track">
+              <div class="skill-grow-curr" style="width: 50%;"></div>
+              <div class="skill-grow-prev" style="width: 20%;"></div>
+            </div>
+          </div>
+
+          <div class="skill-grow">
+            <div class="skill-grow-head">
+              <span class="skill-grow-name">大数据 / Spark</span>
+              <span class="skill-grow-delta">+2 级</span>
+            </div>
+            <div class="skill-grow-track">
+              <div class="skill-grow-curr" style="width: 40%;"></div>
+              <div class="skill-grow-prev" style="width: 20%;"></div>
+            </div>
+          </div>
+
+          <div class="skill-grow">
+            <div class="skill-grow-head">
+              <span class="skill-grow-name">线性代数</span>
+              <span class="skill-grow-delta">+1 级</span>
+            </div>
+            <div class="skill-grow-track">
+              <div class="skill-grow-curr" style="width: 75%;"></div>
+              <div class="skill-grow-prev" style="width: 65%;"></div>
+            </div>
+          </div>
+
+          <div class="skill-grow">
+            <div class="skill-grow-head">
+              <span class="skill-grow-name">Python</span>
+              <span class="skill-grow-delta flat">持平</span>
+            </div>
+            <div class="skill-grow-track">
+              <div class="skill-grow-curr" style="width: 70%;"></div>
+              <div class="skill-grow-prev" style="width: 70%;"></div>
+            </div>
+          </div>
+
+          <div class="skill-grow">
+            <div class="skill-grow-head">
+              <span class="skill-grow-name">统计学</span>
+              <span class="skill-grow-delta flat">尚未开始</span>
+            </div>
+            <div class="skill-grow-track">
+              <div class="skill-grow-curr" style="width: 30%;"></div>
+              <div class="skill-grow-prev" style="width: 30%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action items / Next steps -->
+        <div class="dash-panel">
+          <div class="dash-panel-head">
+            <div>
+              <div class="dash-panel-title">该做的事</div>
+              <div class="dash-panel-sub">SkillPath 提醒</div>
+            </div>
+          </div>
+
+          <div class="action-item">
+            <div class="action-item-head">
+              <div class="action-icon urgent">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div class="action-title">秋季选课倒计时</div>
+            </div>
+            <div class="action-body">还有 <span class="deadline">14 天</span>。系统已为你准备好深度学习 + 统计学 + 云计算的清单,一键提交即可。</div>
+          </div>
+
+          <div class="action-item">
+            <div class="action-item-head">
+              <div class="action-icon tip">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              </div>
+              <div class="action-title">想加速?试试这些</div>
+            </div>
+            <div class="action-body">Coursera 上的 <strong>Andrew Ng ML 课</strong> 跟你这学期的机器学习基础完美互补,有 19 名同校同学也在学。</div>
+          </div>
+
+          <div class="action-item">
+            <div class="action-item-head">
+              <div class="action-icon">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+              </div>
+              <div class="action-title">寒假实习</div>
+            </div>
+            <div class="action-body">字节、商汤、旷视的 ML 实习生岗位刚开放。基于你的进度,建议大三暑假冲一波。</div>
+          </div>
+
+          <div class="action-item">
+            <div class="action-item-head">
+              <div class="action-icon">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div class="action-title">和学长聊聊</div>
+            </div>
+            <div class="action-body">同专业已就业的 <strong>4 位 ML 工程师学长</strong> 愿意每周开放半小时聊学习路径。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Path Timeline (compact) -->
+      <div class="path-section">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title">完整路径 · 4 学期</div>
+            <div class="panel-sub">基于你的目标自动生成 · 灵活可调</div>
+          </div>
+          <a class="dash-panel-action" data-go="4">改一下目标 →</a>
+        </div>
+
+        <div class="path-grid">
+          <div class="path-step now">
+            <div class="path-marker"></div>
+            <div class="path-sem">第 5 学期</div>
+            <div class="path-date">2026 春 · 现在</div>
+            <div class="path-course">机器学习基础 <span class="cr">3</span></div>
+            <div class="path-course">大数据分析 <span class="cr">4</span></div>
+            <div class="path-course">线性代数 II <span class="cr">3</span></div>
+          </div>
+
+          <div class="path-step">
+            <div class="path-marker"></div>
+            <div class="path-sem">第 6 学期</div>
+            <div class="path-date">2026 秋</div>
+            <div class="path-course">深度学习 <span class="cr">4</span></div>
+            <div class="path-course">统计学 <span class="cr">3</span></div>
+            <div class="path-course">云计算 <span class="cr">2</span></div>
+          </div>
+
+          <div class="path-step">
+            <div class="path-marker"></div>
+            <div class="path-sem">第 7 学期</div>
+            <div class="path-date">2027 春</div>
+            <div class="path-course">自然语言处理 <span class="cr">3</span></div>
+            <div class="path-course">MLOps 实战 <span class="cr">3</span></div>
+            <div class="path-course">最优化 <span class="cr">3</span></div>
+          </div>
+
+          <div class="path-step">
+            <div class="path-marker"></div>
+            <div class="path-sem">第 8 学期</div>
+            <div class="path-date">2027 秋</div>
+            <div class="path-course">毕业设计 <span class="cr">4</span></div>
+            <div class="path-course">ML 工程实践 <span class="cr">3</span></div>
+            <div class="path-course">企业实习 <span class="cr">6</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Market pulse -->
+      <div class="pulse-section">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title">市场风向 · 这些技能在涨</div>
+            <div class="panel-sub">基于过去 30 天 ML 工程师岗位需求</div>
+          </div>
+          <a class="dash-panel-action">看完整报告 →</a>
+        </div>
+
+        <div class="pulse-grid">
+          <div class="pulse-card">
+            <div class="pulse-card-tag">// 新兴技能</div>
+            <div class="pulse-card-name">大语言模型</div>
+            <div class="pulse-card-delta up">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+              +156%
+            </div>
+            <div class="pulse-card-spark">
+              <svg viewBox="0 0 100 28" preserveAspectRatio="none">
+                <polyline points="0,24 12,22 25,20 38,16 50,14 62,9 75,7 88,5 100,3" fill="none" stroke="#4d7c0f" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="pulse-card">
+            <div class="pulse-card-tag">// 持续上涨</div>
+            <div class="pulse-card-name">MLOps</div>
+            <div class="pulse-card-delta up">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+              +42%
+            </div>
+            <div class="pulse-card-spark">
+              <svg viewBox="0 0 100 28" preserveAspectRatio="none">
+                <polyline points="0,22 12,20 25,18 38,16 50,14 62,11 75,8 88,7 100,5" fill="none" stroke="#4d7c0f" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="pulse-card">
+            <div class="pulse-card-tag">// 稳健</div>
+            <div class="pulse-card-name">PyTorch</div>
+            <div class="pulse-card-delta up">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+              +24%
+            </div>
+            <div class="pulse-card-spark">
+              <svg viewBox="0 0 100 28" preserveAspectRatio="none">
+                <polyline points="0,18 12,17 25,15 38,16 50,14 62,12 75,11 88,10 100,9" fill="none" stroke="#4d7c0f" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="pulse-card">
+            <div class="pulse-card-tag">// 下滑</div>
+            <div class="pulse-card-name">Hadoop</div>
+            <div class="pulse-card-delta down">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/></svg>
+              -7%
+            </div>
+            <div class="pulse-card-spark">
+              <svg viewBox="0 0 100 28" preserveAspectRatio="none">
+                <polyline points="0,8 12,10 25,11 38,13 50,14 62,16 75,18 88,20 100,22" fill="none" stroke="#b85c38" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity feed -->
+      <div class="activity-section">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title">最近动态</div>
+            <div class="panel-sub">你的 SkillPath 时间线</div>
+          </div>
+        </div>
+
+        <div class="activity-list">
+          <div class="activity">
+            <div class="activity-marker book">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            </div>
+            <div class="activity-body">
+              你完成了 <strong>线性代数 II</strong>。这给 <span class="em">机器学习</span> 路径解锁了 <strong>2 门</strong>后续课程。
+            </div>
+            <div class="activity-time">2 天前</div>
+          </div>
+
+          <div class="activity">
+            <div class="activity-marker skill">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
+            <div class="activity-body">
+              你的 <strong>机器学习</strong> 技能从 L2 升到 <strong>L5</strong>。再上 1 门课就能匹配大部分 ML 实习的入门要求。
+            </div>
+            <div class="activity-time">5 天前</div>
+          </div>
+
+          <div class="activity">
+            <div class="activity-marker market">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            </div>
+            <div class="activity-body">
+              市场提醒:<strong>LLM 工程师</strong> 岗位本月新增 <span class="em">2,847 条</span>。如果你对这方向感兴趣,可以考虑加上 NLP 课。
+            </div>
+            <div class="activity-time">1 周前</div>
+          </div>
+
+          <div class="activity">
+            <div class="activity-marker target">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            </div>
+            <div class="activity-body">
+              你保存了 <span class="em">机器学习工程师</span> 作为职业目标。我们会一直陪你到达那里。
+            </div>
+            <div class="activity-time">2 周前</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer note -->
+      <div style="text-align: center; padding: 40px 20px 20px; color: var(--ink-4); font-size: 12.5px; line-height: 1.6;">
+        <div style="font-family: 'Fraunces', serif; font-style: italic; font-size: 15px; color: var(--ink-3); margin-bottom: 8px;">
+          "选课就像下棋,看一步走一步不行,得想三步以后。"
+        </div>
+        SkillPath · 在每个迷茫的选课季陪你做决定
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // ============= Step Switching =============
+  const steps = document.querySelectorAll('.step');
+  const progressSteps = document.querySelectorAll('.progress-step');
+
+  function goTo(n) {
+    n = parseInt(n);
+    document.body.dataset.step = n;
+    steps.forEach((s) => s.classList.toggle('active', parseInt(s.dataset.step) === n));
+    progressSteps.forEach((p, i) => {
+      const idx = i + 1;
+      p.classList.toggle('active', idx === n);
+      p.classList.toggle('done', idx < n);
+    });
+    const restartLink = document.getElementById('restartLink');
+    if (restartLink) restartLink.style.display = n === 6 ? 'inline-flex' : 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  document.body.dataset.step = 1;
+
+  document.querySelectorAll('[data-go]').forEach((el) => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      goTo(el.dataset.go);
+    });
+  });
+
+  // ============= Single-pick groups =============
+  document.querySelectorAll('[data-pick]').forEach((group) => {
+    group.querySelectorAll('.pick-chip').forEach((chip) => {
+      chip.addEventListener('click', () => {
+        group.querySelectorAll('.pick-chip').forEach((c) => c.classList.remove('on'));
+        chip.classList.add('on');
+      });
+    });
+  });
+
+  // ============= Multi-pick skill groups =============
+  function updateSkillCounts() {
+    let total = 0;
+    document.querySelectorAll('[data-skill-group]').forEach((g) => {
+      const all = g.querySelectorAll('.pick-chip').length;
+      const on = g.querySelectorAll('.pick-chip.on').length;
+      total += on;
+      const lookupId = 'cnt-' + g.dataset.skillGroup;
+      const el = document.getElementById(lookupId);
+      if (el) el.textContent = on + ' / ' + all;
+    });
+    const hint = document.getElementById('skills-hint');
+    if (hint) hint.innerHTML = '已选 <strong>' + total + '</strong> 项 · 不确定就别选';
+  }
+
+  document.querySelectorAll('[data-skill-group] .pick-chip').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      chip.classList.toggle('on');
+      updateSkillCounts();
+    });
+  });
+  updateSkillCounts();
+
+  // ============= Career select =============
+  const careerNames = {
+    ml: '机器学习工程师',
+    ds: '数据科学家',
+    be: '后端工程师',
+    fe: '前端工程师',
+    da: '数据分析师',
+    ai: 'AI 研究员',
+  };
+
+  document.querySelectorAll('.career').forEach((card) => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.career').forEach((c) => c.classList.remove('on'));
+      card.classList.add('on');
+      const key = card.dataset.career;
+      const picked = document.getElementById('picked-career');
+      if (picked) picked.textContent = careerNames[key];
+    });
+  });
+
+  // ============= Add to plan =============
+  document.querySelectorAll('[data-add]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('added');
+      btn.innerHTML = btn.classList.contains('added')
+        ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>'
+        : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+    });
+  });
+</script>
+</body>
+</html>
