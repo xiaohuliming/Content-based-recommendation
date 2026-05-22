@@ -3,3 +3,17 @@
 
 # Large data archives (kept locally only)
 data/archive.zip
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+
+# Output artifacts (regenerable)
+output/
+
+# Secrets
+.env
