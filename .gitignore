@@ -1,0 +1,5 @@
+# macOS
+.DS_Store
+
+# Large data archives (kept locally only)
+data/archive.zip
