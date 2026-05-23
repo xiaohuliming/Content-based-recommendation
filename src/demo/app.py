@@ -10,15 +10,21 @@ Endpoints:
   GET  /                    serve prototype HTML
   GET  /api/careers         list career titles in the graph (for frontend autocomplete)
   POST /api/recommend       body: {career_goal, completed_courses[], top_k=10}
+  POST /api/transcript      multipart file upload → {major, year, gpa,
+                            completed_courses[], current_courses[]}
 """
 import copy
+import os
 import pickle
 import secrets
 from pathlib import Path
 
 import networkx as nx
+from dotenv import load_dotenv
 from flask import Flask, jsonify, request, send_from_directory
+from openai import OpenAI
 
+from src.demo.transcript import extract_transcript_text, parse_transcript_with_llm
 from src.demo.transient_student import add_transient_student
 from src.ppr.engine import recommend_courses
 from src.ppr.explain import explain_recommendation, format_explanation
@@ -29,10 +35,27 @@ PROTOTYPE_HTML = PROJECT_ROOT / "prototype" / "SkillPath-Demo.html"
 
 
 def create_app(graph_path: str | None = None) -> Flask:
+    load_dotenv()
     app = Flask(__name__)
+    app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10 MB transcript cap
     g_path = Path(graph_path) if graph_path else DEFAULT_GRAPH_PATH
     g: nx.DiGraph = pickle.loads(g_path.read_bytes())
     app.config["GRAPH"] = g
+
+    # Lazy LLM client — only built if /api/transcript is hit. Avoids requiring
+    # LLM_API_KEY for the basic /api/recommend flow.
+    _llm_state = {"client": None, "model": None}
+
+    def _get_llm():
+        if _llm_state["client"] is None:
+            api_key = os.getenv("LLM_API_KEY")
+            base_url = os.getenv("LLM_BASE_URL", "https://api.deepseek.com/v1")
+            model = os.getenv("LLM_MODEL", "deepseek-chat")
+            if not api_key:
+                return None, None
+            _llm_state["client"] = OpenAI(api_key=api_key, base_url=base_url)
+            _llm_state["model"] = model
+        return _llm_state["client"], _llm_state["model"]
 
     @app.get("/")
     def index():
@@ -86,6 +109,29 @@ def create_app(graph_path: str | None = None) -> Flask:
             })
 
         return jsonify({"student_id": sid, "recommendations": results})
+
+    @app.post("/api/transcript")
+    def transcript():
+        if "file" not in request.files:
+            return jsonify({"error": "no file uploaded (use multipart field 'file')"}), 400
+        upload = request.files["file"]
+        if not upload.filename:
+            return jsonify({"error": "empty filename"}), 400
+        if not upload.filename.lower().endswith(".pdf"):
+            return jsonify({"error": "only .pdf files are supported"}), 415
+
+        try:
+            text = extract_transcript_text(upload.read())
+        except Exception as exc:
+            return jsonify({"error": f"failed to read PDF: {exc}"}), 400
+
+        client, model = _get_llm()
+        if client is None:
+            return jsonify({"error": "LLM_API_KEY not configured on server"}), 503
+
+        parsed = parse_transcript_with_llm(text, client, model)
+        parsed["raw_text_chars"] = len(text)  # debugging aid for the frontend
+        return jsonify(parsed)
 
     return app
 
