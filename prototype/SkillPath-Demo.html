@@ -1114,6 +1114,169 @@
   body[data-step="6"] .dash-nav { display: flex; }
   body[data-step="6"] { background: var(--paper-2); }
 
+  /* ============== Transcript upload (Step 2) ============== */
+  .upload-hero {
+    display: grid;
+    grid-template-columns: 1.45fr 1fr;
+    gap: 22px;
+    margin-top: 28px;
+    align-items: stretch;
+  }
+  @media (max-width: 780px) { .upload-hero { grid-template-columns: 1fr; } }
+
+  .drop-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 52px 24px;
+    border: 2px dashed var(--rust-soft);
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--rust-bg) 0%, #f9ead8 100%);
+    cursor: pointer;
+    transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+    text-align: center;
+    min-height: 260px;
+    position: relative;
+    overflow: hidden;
+  }
+  .drop-zone:hover, .drop-zone.dragging {
+    border-color: var(--rust);
+    background: linear-gradient(135deg, #f5d5b8 0%, #f1c8a3 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(184, 92, 56, 0.18);
+  }
+  .drop-zone.dragging { border-style: solid; }
+  .drop-icon {
+    width: 60px; height: 60px;
+    border-radius: 14px;
+    background: white;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 18px;
+    color: var(--rust);
+    box-shadow: 0 4px 14px rgba(184, 92, 56, 0.18);
+  }
+  .drop-title {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .drop-sub { color: var(--ink-3); font-size: 14px; }
+  .drop-link {
+    color: var(--rust);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-weight: 500;
+  }
+  .drop-filename {
+    margin-top: 18px;
+    padding: 8px 16px;
+    background: white;
+    border-radius: 7px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: var(--ink-2);
+    display: none;
+    border: 1px solid var(--border-soft);
+    max-width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .drop-filename.shown { display: inline-block; }
+
+  .extract-list {
+    background: var(--paper-2);
+    border-radius: 16px;
+    padding: 26px 24px;
+    border: 1px solid var(--border-soft);
+  }
+  .extract-list-title {
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    color: var(--ink);
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .extract-item {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 16px;
+    align-items: flex-start;
+  }
+  .extract-item:last-child { margin-bottom: 0; }
+  .extract-icon {
+    width: 36px; height: 36px;
+    border-radius: 9px;
+    background: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    border: 1px solid var(--border-soft);
+  }
+  .extract-name {
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 2px;
+    font-size: 14px;
+  }
+  .extract-meta { color: var(--ink-4); font-size: 12.5px; }
+
+  .upload-action-bar {
+    margin-top: 22px;
+    display: flex; align-items: center; gap: 18px;
+    flex-wrap: wrap;
+  }
+  #transcript-status {
+    color: var(--ink-3);
+    font-size: 13.5px;
+    min-height: 1.4em;
+  }
+  #transcript-status.error { color: #c0392b; }
+  #transcript-status.success { color: #2e7d32; font-weight: 500; }
+
+  .parse-summary {
+    margin-top: 22px;
+    background: linear-gradient(135deg, #e8f5e9 0%, #d4edda 100%);
+    border: 1px solid #66bb6a;
+    border-radius: 14px;
+    padding: 22px 26px;
+  }
+  .parse-summary-head {
+    display: flex; align-items: center; gap: 12px;
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    color: #1b5e20;
+    margin-bottom: 16px;
+  }
+  .parse-summary-check {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #4caf50; color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+  }
+  .parse-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px 28px;
+  }
+  .parse-summary-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 7px 0;
+    border-bottom: 1px dashed rgba(46, 125, 50, 0.18);
+  }
+  .parse-summary-row .lbl { color: #2e7d32; font-size: 13px; }
+  .parse-summary-row .val { color: #1b5e20; font-weight: 600; font-size: 14.5px; }
+  .parse-summary-note {
+    margin-top: 16px;
+    color: #2e7d32;
+    font-size: 12.5px;
+    font-style: italic;
+  }
+
   /* ============== Dashboard Layout ============== */
   .dash {
     max-width: 1180px;
@@ -1713,41 +1876,93 @@
   <!-- ============== STEP 2: PROFILE ============== -->
   <!-- ============== STEP 2: UPLOAD (dedicated) ============== -->
   <section class="step" data-step="2">
-    <div class="step-shell" style="max-width: 720px;">
+    <div class="step-shell" style="max-width: 920px;">
       <span class="eyebrow">第 1 步 · 共 4 步</span>
       <h2 class="headline">先来,<em>上传你的成绩单</em></h2>
-      <p class="lead-sm">我们会自动识别你的专业、年级、GPA 和所有已修 / 在修课程，让后面的步骤直接跳过。不上传也行，可以手动填。</p>
+      <p class="lead-sm">一份 PDF 就够了 —— 我们会识别专业、年级、GPA 和所有课程，后面的步骤可以直接跳过。不想上传也没关系，可以手动填。</p>
 
-      <div class="form-section" style="background:#fef9e7;border:1px dashed #d4a017;padding:24px;border-radius:10px;margin-top:24px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-          <span style="font-size:1.4em">📄</span>
-          <label class="form-label" style="margin:0">上传 PDF 成绩单</label>
+      <!-- Two-column hero: drop zone | what gets extracted -->
+      <div class="upload-hero">
+        <label class="drop-zone" for="transcript-file" id="drop-zone">
+          <div class="drop-icon">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="12" y1="18" x2="12" y2="12"/>
+              <polyline points="9 15 12 12 15 15"/>
+            </svg>
+          </div>
+          <div class="drop-title">拖拽 PDF 到这里</div>
+          <div class="drop-sub">或 <span class="drop-link">点击选择文件</span></div>
+          <input id="transcript-file" type="file" accept=".pdf" hidden />
+          <div class="drop-filename" id="drop-filename"></div>
+        </label>
+
+        <div class="extract-list">
+          <div class="extract-list-title">我们会自动识别</div>
+          <div class="extract-item">
+            <div class="extract-icon">🎓</div>
+            <div>
+              <div class="extract-name">专业 + 年级</div>
+              <div class="extract-meta">从 Programme 或 Award 行</div>
+            </div>
+          </div>
+          <div class="extract-item">
+            <div class="extract-icon">📊</div>
+            <div>
+              <div class="extract-name">累积 GPA</div>
+              <div class="extract-meta">用于挑选合适难度</div>
+            </div>
+          </div>
+          <div class="extract-item">
+            <div class="extract-icon">✓</div>
+            <div>
+              <div class="extract-name">已修课程代码</div>
+              <div class="extract-meta">用于推断你的技能基础</div>
+            </div>
+          </div>
+          <div class="extract-item">
+            <div class="extract-icon">⏳</div>
+            <div>
+              <div class="extract-name">本学期在修课程</div>
+              <div class="extract-meta">避免重复推荐</div>
+            </div>
+          </div>
         </div>
-        <div class="form-hint" style="margin-bottom:14px">仅 PDF。文件经第三方 LLM 抽取信息后丢弃，不会本地存储。</div>
-        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-          <input id="transcript-file" type="file" accept=".pdf" />
-          <button id="transcript-upload-btn" type="button" class="btn btn-primary">识别成绩单</button>
-        </div>
-        <div id="transcript-status" style="color:#666;font-size:0.9em;margin-top:10px;min-height:1.2em"></div>
+      </div>
+
+      <div class="upload-action-bar">
+        <button id="transcript-upload-btn" type="button" class="btn btn-primary" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 12l2 2 4-4"/>
+            <circle cx="12" cy="12" r="10"/>
+          </svg>
+          识别成绩单
+        </button>
+        <span id="transcript-status">选择 PDF 文件后可开始识别</span>
       </div>
 
       <!-- Parsed result summary (hidden until upload succeeds) -->
-      <div id="transcript-summary" style="display:none;margin-top:18px;background:#e8f5e9;border:1px solid #4caf50;padding:18px;border-radius:10px">
-        <div style="font-weight:600;margin-bottom:10px;color:#1b5e20">✓ 已识别你的成绩单</div>
-        <div id="transcript-summary-grid" style="display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:0.95em"></div>
-        <div style="margin-top:14px;font-size:0.85em;color:#666">如有识别错误，进入下一步后仍可手动调整。</div>
+      <div id="transcript-summary" class="parse-summary" style="display:none">
+        <div class="parse-summary-head">
+          <span class="parse-summary-check">✓</span>
+          <span>已识别你的成绩单</span>
+        </div>
+        <div class="parse-summary-grid" id="transcript-summary-grid"></div>
+        <div class="parse-summary-note">如有识别错误，进入下一步后仍可手动调整。隐私说明：PDF 仅经第三方 LLM 抽取后丢弃，不在本机存储。</div>
       </div>
 
-      <div class="step-footer" style="margin-top:24px">
+      <div class="step-footer" style="margin-top:28px">
         <button class="btn btn-ghost" data-go="1">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
           上一步
         </button>
         <button class="btn btn-ghost" data-go="manual" id="goto-manual">
-          没有成绩单？手动填写资料
+          没有成绩单？手动填写
         </button>
         <button class="btn btn-primary" id="continue-after-upload" data-go="4" style="display:none">
-          继续选择目标 →
+          继续选择目标
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </button>
       </div>
     </div>
@@ -2704,29 +2919,78 @@ window.__skillpath = window.__skillpath || {};
   const summaryGrid = document.getElementById('transcript-summary-grid');
   const continueBtn = document.getElementById('continue-after-upload');
   const manualBtn = document.getElementById('goto-manual');
+  const dropZone = document.getElementById('drop-zone');
+  const filenameEl = document.getElementById('drop-filename');
   if (!btn || !fileInput) return;
 
-  function setStatus(msg, color = '#666') {
-    if (status) { status.textContent = msg; status.style.color = color; }
+  function setStatus(msg, tone = '') {
+    if (!status) return;
+    status.textContent = msg;
+    status.classList.remove('error', 'success');
+    if (tone) status.classList.add(tone);
   }
+
+  function fileSelected(file) {
+    if (!file) {
+      filenameEl.textContent = '';
+      filenameEl.classList.remove('shown');
+      btn.disabled = true;
+      setStatus('选择 PDF 文件后可开始识别');
+      return;
+    }
+    const sizeKB = (file.size / 1024).toFixed(0);
+    filenameEl.textContent = `📄 ${file.name} · ${sizeKB} KB`;
+    filenameEl.classList.add('shown');
+    btn.disabled = false;
+    setStatus(`已选择 ${file.name}，点击右侧按钮开始识别`);
+  }
+
+  fileInput.addEventListener('change', () => fileSelected(fileInput.files[0]));
+
+  // Drag-and-drop
+  ['dragenter', 'dragover'].forEach((evt) =>
+    dropZone.addEventListener(evt, (e) => {
+      e.preventDefault();
+      dropZone.classList.add('dragging');
+    })
+  );
+  ['dragleave', 'drop'].forEach((evt) =>
+    dropZone.addEventListener(evt, (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragging');
+    })
+  );
+  dropZone.addEventListener('drop', (e) => {
+    const f = e.dataTransfer?.files?.[0];
+    if (f && f.type === 'application/pdf') {
+      // Assign the dropped file to the input so submit uses the same file
+      const dt = new DataTransfer();
+      dt.items.add(f);
+      fileInput.files = dt.files;
+      fileSelected(f);
+    } else if (f) {
+      setStatus('只接受 PDF 文件', 'error');
+    }
+  });
 
   function renderSummary(data) {
     const rows = [
       ['专业', data.major || '<em style="color:#999">未识别</em>'],
-      ['年级', data.year ? '大' + data.year : '<em style="color:#999">未识别</em>'],
+      ['年级', data.year ? `大${data.year}` : '<em style="color:#999">未识别</em>'],
       ['GPA', data.gpa != null ? data.gpa : '<em style="color:#999">未识别</em>'],
-      ['已修课程', (data.completed_courses || []).length + ' 门'],
-      ['在修课程', (data.current_courses || []).length + ' 门'],
+      ['已修课程', `${(data.completed_courses || []).length} 门`],
+      ['本学期在修', `${(data.current_courses || []).length} 门`],
+      ['原始文本长度', `${data.raw_text_chars || 0} 字符`],
     ];
     summaryGrid.innerHTML = rows.map(([k, v]) =>
-      `<div style="color:#666">${k}</div><div><strong>${v}</strong></div>`
+      `<div class="parse-summary-row"><span class="lbl">${k}</span><span class="val">${v}</span></div>`
     ).join('');
     summaryEl.style.display = 'block';
   }
 
   btn.addEventListener('click', async () => {
     if (!fileInput.files || !fileInput.files[0]) {
-      setStatus('请先选择 PDF 文件', '#c33');
+      setStatus('请先选择或拖入 PDF 文件', 'error');
       return;
     }
     setStatus('正在识别…通常需要 10-30 秒');
@@ -2740,14 +3004,12 @@ window.__skillpath = window.__skillpath || {};
       const r = await fetch('/api/transcript', { method: 'POST', body: form });
       const data = await r.json();
       if (!r.ok) {
-        setStatus(`失败: ${data.error || r.status}`, '#c33');
+        setStatus(`失败：${data.error || r.status}`, 'error');
         return;
       }
 
-      // Stash parsed profile for downstream steps to consume
       window.__skillpath.profile = data;
 
-      // Push completed + current into the hidden Step 4 input
       const allCourses = [
         ...(data.completed_courses || []),
         ...(data.current_courses || []),
@@ -2756,11 +3018,11 @@ window.__skillpath = window.__skillpath || {};
       if (cc) cc.value = allCourses.join(', ');
 
       renderSummary(data);
-      setStatus('✓ 识别成功，下一步直接选职业目标即可', '#080');
+      setStatus('✓ 识别成功，下一步直接选职业目标', 'success');
       continueBtn.style.display = 'inline-flex';
       if (manualBtn) manualBtn.style.display = 'none';
     } catch (e) {
-      setStatus(`错误: ${e.message}`, '#c33');
+      setStatus(`错误：${e.message}`, 'error');
     } finally {
       btn.disabled = false;
     }
