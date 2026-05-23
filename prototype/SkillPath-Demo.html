@@ -1172,7 +1172,7 @@
   }
   .drop-filename {
     margin-top: 18px;
-    padding: 8px 16px;
+    padding: 8px 14px;
     background: white;
     border-radius: 7px;
     font-family: 'JetBrains Mono', monospace;
@@ -1184,8 +1184,11 @@
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+    align-items: center;
+    gap: 8px;
   }
-  .drop-filename.shown { display: inline-block; }
+  .drop-filename.shown { display: inline-flex; }
+  .drop-filename svg { color: var(--rust); flex-shrink: 0; }
 
   .extract-list {
     background: var(--paper-2);
@@ -1213,10 +1216,11 @@
     border-radius: 9px;
     background: white;
     display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
     flex-shrink: 0;
     border: 1px solid var(--border-soft);
+    color: var(--rust);
   }
+  .extract-icon svg { display: block; }
   .extract-name {
     font-weight: 500;
     color: var(--ink);
@@ -1256,8 +1260,9 @@
     width: 28px; height: 28px; border-radius: 50%;
     background: #4caf50; color: white;
     display: flex; align-items: center; justify-content: center;
-    font-size: 14px; font-weight: 700;
+    flex-shrink: 0;
   }
+  .parse-summary-check svg { display: block; }
   .parse-summary-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -1901,28 +1906,49 @@
         <div class="extract-list">
           <div class="extract-list-title">我们会自动识别</div>
           <div class="extract-item">
-            <div class="extract-icon">🎓</div>
+            <div class="extract-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+              </svg>
+            </div>
             <div>
               <div class="extract-name">专业 + 年级</div>
               <div class="extract-meta">从 Programme 或 Award 行</div>
             </div>
           </div>
           <div class="extract-item">
-            <div class="extract-icon">📊</div>
+            <div class="extract-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10"/>
+                <line x1="12" y1="20" x2="12" y2="4"/>
+                <line x1="6" y1="20" x2="6" y2="14"/>
+              </svg>
+            </div>
             <div>
               <div class="extract-name">累积 GPA</div>
               <div class="extract-meta">用于挑选合适难度</div>
             </div>
           </div>
           <div class="extract-item">
-            <div class="extract-icon">✓</div>
+            <div class="extract-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+            </div>
             <div>
               <div class="extract-name">已修课程代码</div>
               <div class="extract-meta">用于推断你的技能基础</div>
             </div>
           </div>
           <div class="extract-item">
-            <div class="extract-icon">⏳</div>
+            <div class="extract-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
             <div>
               <div class="extract-name">本学期在修课程</div>
               <div class="extract-meta">避免重复推荐</div>
@@ -1945,7 +1971,9 @@
       <!-- Parsed result summary (hidden until upload succeeds) -->
       <div id="transcript-summary" class="parse-summary" style="display:none">
         <div class="parse-summary-head">
-          <span class="parse-summary-check">✓</span>
+          <span class="parse-summary-check">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </span>
           <span>已识别你的成绩单</span>
         </div>
         <div class="parse-summary-grid" id="transcript-summary-grid"></div>
@@ -2930,16 +2958,18 @@ window.__skillpath = window.__skillpath || {};
     if (tone) status.classList.add(tone);
   }
 
+  const PDF_ICON_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+
   function fileSelected(file) {
     if (!file) {
-      filenameEl.textContent = '';
+      filenameEl.innerHTML = '';
       filenameEl.classList.remove('shown');
       btn.disabled = true;
       setStatus('选择 PDF 文件后可开始识别');
       return;
     }
     const sizeKB = (file.size / 1024).toFixed(0);
-    filenameEl.textContent = `📄 ${file.name} · ${sizeKB} KB`;
+    filenameEl.innerHTML = `${PDF_ICON_SVG}<span>${file.name} · ${sizeKB} KB</span>`;
     filenameEl.classList.add('shown');
     btn.disabled = false;
     setStatus(`已选择 ${file.name}，点击右侧按钮开始识别`);
