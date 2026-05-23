@@ -129,5 +129,5 @@ def categorize_skill(skill: str) -> str:
 def build_taxonomy_with_categories(extracted_per_doc: list[list[str]]) -> pd.DataFrame:
     """Build taxonomy and attach category column."""
     df = build_taxonomy(extracted_per_doc)
-    df["category"] = df["skill"].apply(categorize_skill)
+    df.loc[:, "category"] = df["skill"].apply(categorize_skill)
     return df

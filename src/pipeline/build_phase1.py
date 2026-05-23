@@ -138,7 +138,7 @@ def main() -> None:
     course_skills = _extract_with_progress(
         extractor, courses_master["description"].fillna("").tolist(), desc="  courses"
     )
-    courses_master["extracted_skills"] = [",".join(s) for s in course_skills]
+    courses_master.loc[:, "extracted_skills"] = [",".join(s) for s in course_skills]
     _flatten_list_columns(courses_master).to_csv(
         OUTPUT_DIR / "courses_skills.csv", index=False
     )
