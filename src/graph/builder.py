@@ -108,6 +108,10 @@ def build_graph(
                     if g.nodes[skill_node].get("type") == "skill":
                         edge_w = g[course_node][skill_node]["weight"]
                         student_skill_score[skill_node] += edge_w
+        if student_skill_score:
+            max_w = max(student_skill_score.values())
+            if max_w > 0:
+                student_skill_score = {k: v / max_w for k, v in student_skill_score.items()}
         for skill_node, w in student_skill_score.items():
             g.add_edge(f"student:{sid}", skill_node, weight=w, edge_type="student-skill")
 
