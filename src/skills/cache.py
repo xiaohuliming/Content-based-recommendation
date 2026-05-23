@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import tempfile
+import threading
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -19,12 +20,17 @@ class SkillCache:
     explicitly to persist results. If the process exits without a final flush,
     all changes since the last flush are lost. Long-running batch callers should
     flush periodically (e.g., every 100 calls).
+
+    Thread safety: `set` and `flush` are guarded by an internal lock so worker
+    threads can call `set` while the main thread calls `flush`. `get` is lock-free
+    (CPython dict reads are atomic).
     """
 
     def __init__(self, path: Path, autoflush: bool = False):
         self.path = Path(path)
         self.autoflush = autoflush
         self._data: dict[str, list[str]] = {}
+        self._lock = threading.Lock()
         if self.path.exists():
             try:
                 self._data = json.loads(self.path.read_text())
@@ -40,7 +46,8 @@ class SkillCache:
         return self._data.get(self._key(text))
 
     def set(self, text: str, skills: list[str]) -> None:
-        self._data[self._key(text)] = skills
+        with self._lock:
+            self._data[self._key(text)] = skills
         if self.autoflush:
             self.flush()
 
@@ -51,7 +58,8 @@ class SkillCache:
         This is crash-safe — a partial write cannot corrupt the existing file.
         """
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        data = json.dumps(self._data, ensure_ascii=False, indent=2)
+        with self._lock:
+            data = json.dumps(self._data, ensure_ascii=False, indent=2)
         fd, tmp = tempfile.mkstemp(dir=self.path.parent, suffix=".tmp", prefix=self.path.name + ".")
         try:
             with os.fdopen(fd, "w", encoding="utf-8") as f:

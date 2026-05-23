@@ -11,8 +11,10 @@ Outputs (in output/):
     - courses_skills.csv         courses with extracted skills column
     - skill_taxonomy.csv         canonical skill list with categories
 
-Environment:
-    ANTHROPIC_API_KEY must be set (e.g., in .env or shell).
+Environment (OpenAI-compatible chat-completions endpoint):
+    LLM_API_KEY   required
+    LLM_BASE_URL  optional, default https://api.deepseek.com/v1
+    LLM_MODEL     optional, default deepseek-chat
 
 Reruns are resumable: LLM calls are cached on disk in output/cache/.
 """
@@ -20,8 +22,8 @@ import os
 from pathlib import Path
 
 import pandas as pd
-from anthropic import Anthropic
 from dotenv import load_dotenv
+from openai import OpenAI
 from tqdm import tqdm
 
 from src.parsers.excel_timetable import collapse_sessions, load_timetable
@@ -43,7 +45,11 @@ LINKEDIN_ARCHIVE = DATA_DIR / "archive.zip"
 JOB_SAMPLE_SIZE = 5000
 RANDOM_SEED = 42
 CACHE_FLUSH_INTERVAL = 100
+CONCURRENCY = 30
 LIST_COLUMNS_TO_FLATTEN = ("schedules", "classrooms", "teachers")
+
+DEFAULT_BASE_URL = "https://api.deepseek.com/v1"
+DEFAULT_MODEL = "deepseek-chat"
 
 
 def _flatten_list_columns(df: pd.DataFrame) -> pd.DataFrame:
@@ -57,10 +63,29 @@ def _flatten_list_columns(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def _extract_with_progress(extractor: SkillExtractor, texts: list[str], *, desc: str) -> list[list[str]]:
+    """Wrap extractor.extract_many with a tqdm progress bar."""
+    bar = tqdm(total=len(texts), desc=desc)
+    def on_progress(done: int, _total: int) -> None:
+        bar.update(1)
+    try:
+        return extractor.extract_many(
+            texts,
+            concurrency=CONCURRENCY,
+            flush_every=CACHE_FLUSH_INTERVAL,
+            on_progress=on_progress,
+        )
+    finally:
+        bar.close()
+
+
 def main() -> None:
     load_dotenv()
-    if not os.getenv("ANTHROPIC_API_KEY"):
-        raise SystemExit("ANTHROPIC_API_KEY not set. Add it to .env or export it in your shell.")
+    api_key = os.getenv("LLM_API_KEY")
+    if not api_key:
+        raise SystemExit("LLM_API_KEY not set. Add it to .env or export it in your shell.")
+    base_url = os.getenv("LLM_BASE_URL", DEFAULT_BASE_URL)
+    model = os.getenv("LLM_MODEL", DEFAULT_MODEL)
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     # ---- Step A: courses (PDF + Excel) ----
@@ -91,35 +116,28 @@ def main() -> None:
     n_courses = len(courses_master)
     total_calls = n_jobs + n_courses
     print(
-        f"[4/5] Extracting skills via LLM: ~{total_calls} calls "
-        f"({n_jobs} jobs + {n_courses} courses).\n"
-        f"      First run takes ~30 min and costs ~$9 with Claude Haiku 4.5.\n"
-        f"      Reruns are resumable: results cached in output/cache/.\n"
-        f"      Progress flushes every {CACHE_FLUSH_INTERVAL} items — Ctrl-C is safe between batches.",
+        f"[4/5] Extracting skills via LLM ({model} @ {base_url}): ~{total_calls} calls "
+        f"({n_jobs} jobs + {n_courses} courses) at concurrency={CONCURRENCY}.\n"
+        f"      Cost / time depend on the model. Reruns are resumable (output/cache/).\n"
+        f"      Progress flushes every {CACHE_FLUSH_INTERVAL} completed items — Ctrl-C is safe between flushes.",
         flush=True,
     )
-    client = Anthropic()
+    client = OpenAI(api_key=api_key, base_url=base_url)
     cache = SkillCache(OUTPUT_DIR / "cache" / "skill_extraction.json")
-    extractor = SkillExtractor(client=client, cache=cache)
+    extractor = SkillExtractor(client=client, cache=cache, model=model)
 
     job_sample = jobs.sample(n=n_jobs, random_state=RANDOM_SEED)
-    job_skills = []
-    for i, desc in enumerate(tqdm(job_sample["description"], desc="  jobs"), 1):
-        job_skills.append(extractor.extract(desc))
-        if i % CACHE_FLUSH_INTERVAL == 0:
-            cache.flush()
-    cache.flush()
+    job_skills = _extract_with_progress(
+        extractor, job_sample["description"].tolist(), desc="  jobs"
+    )
     job_sample.drop(columns=["description"]).assign(
         extracted_skills=[",".join(s) for s in job_skills]
     ).to_csv(OUTPUT_DIR / "jobs_sample_skills.csv", index=False)
     print(f"  wrote jobs_sample_skills.csv ({len(job_sample)} rows)")
 
-    course_skills = []
-    for i, desc in enumerate(tqdm(courses_master["description"].fillna(""), desc="  courses"), 1):
-        course_skills.append(extractor.extract(desc))
-        if i % CACHE_FLUSH_INTERVAL == 0:
-            cache.flush()
-    cache.flush()
+    course_skills = _extract_with_progress(
+        extractor, courses_master["description"].fillna("").tolist(), desc="  courses"
+    )
     courses_master["extracted_skills"] = [",".join(s) for s in course_skills]
     _flatten_list_columns(courses_master).to_csv(
         OUTPUT_DIR / "courses_skills.csv", index=False

@@ -1,7 +1,11 @@
-"""LLM-based skill extraction with caching."""
+"""LLM-based skill extraction with caching.
+
+Provider: any OpenAI-compatible chat-completions endpoint.
+"""
 import json
 import logging
-from typing import Optional
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Callable, Optional
 
 from src.skills.cache import SkillCache
 from src.skills.prompts import EXTRACTION_PROMPT
@@ -12,8 +16,9 @@ logger = logging.getLogger(__name__)
 class SkillExtractor:
     """Extract skills from text using an LLM, with on-disk caching.
 
-    The `client` parameter accepts any object with a `messages.create(...)`
-    method returning an object with `.content[0].text` (Anthropic-style).
+    The `client` parameter accepts any object with a
+    `chat.completions.create(...)` method returning an object whose
+    `.choices[0].message.content` is the model's text output (OpenAI-style).
     Passing a mock client is the supported test strategy.
     """
 
@@ -23,8 +28,8 @@ class SkillExtractor:
         self,
         client,
         cache: SkillCache,
-        model: str = "claude-haiku-4-5-20251001",
-        max_tokens: int = 512,
+        model: str = "deepseek-v4-pro",
+        max_tokens: int = 1024,
     ):
         self.client = client
         self.cache = cache
@@ -42,7 +47,7 @@ class SkillExtractor:
 
         prompt = EXTRACTION_PROMPT.format(text=text)
         try:
-            response = self.client.messages.create(
+            response = self.client.chat.completions.create(
                 model=self.model,
                 max_tokens=self.max_tokens,
                 messages=[{"role": "user", "content": prompt}],
@@ -53,10 +58,44 @@ class SkillExtractor:
             self.cache.set(text, skills)
             return skills
 
-        raw = (response.content[0].text if response.content else "") or ""
+        raw = ""
+        if response.choices and response.choices[0].message:
+            raw = response.choices[0].message.content or ""
         skills = self._parse_json_array(raw)
         self.cache.set(text, skills)
         return skills
+
+    def extract_many(
+        self,
+        texts: list[str],
+        *,
+        concurrency: int = 30,
+        flush_every: int = 100,
+        on_progress: Optional[Callable[[int, int], None]] = None,
+    ) -> list[list[str]]:
+        """Extract skills for many texts concurrently. Results preserve input order.
+
+        Periodically flushes the cache so a Ctrl-C loses at most `flush_every`
+        in-memory results. Workers reuse the underlying client's connection pool.
+        """
+        results: list[list[str]] = [[] for _ in texts]
+        if not texts:
+            return results
+
+        total = len(texts)
+        completed = 0
+        with ThreadPoolExecutor(max_workers=concurrency) as pool:
+            future_to_idx = {pool.submit(self.extract, t): i for i, t in enumerate(texts)}
+            for fut in as_completed(future_to_idx):
+                idx = future_to_idx[fut]
+                results[idx] = fut.result()
+                completed += 1
+                if on_progress is not None:
+                    on_progress(completed, total)
+                if completed % flush_every == 0:
+                    self.cache.flush()
+        self.cache.flush()
+        return results
 
     @staticmethod
     def _parse_json_array(raw: str) -> list[str]:
