@@ -1282,6 +1282,280 @@
     font-style: italic;
   }
 
+  /* ============== Dashboard (Step 6) ============== */
+  .dashboard-wrap {
+    max-width: 1200px;
+    margin: 32px auto;
+    padding: 0 32px;
+  }
+  .dashboard-header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .dashboard-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--ink-4);
+    text-transform: uppercase;
+  }
+  .dashboard-title {
+    font-family: 'Fraunces', serif;
+    font-size: 38px;
+    font-weight: 400;
+    color: var(--ink);
+    line-height: 1.15;
+    margin: 0;
+  }
+  .dashboard-title em { font-style: italic; color: var(--rust); }
+  .dashboard-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .dashboard-chip {
+    padding: 6px 14px;
+    background: var(--paper-2);
+    border: 1px solid var(--border-soft);
+    border-radius: 999px;
+    font-size: 12.5px;
+    color: var(--ink-2);
+  }
+  .dashboard-chip.target {
+    background: var(--rust-bg);
+    border-color: var(--rust-soft);
+    color: var(--rust-deep);
+    font-weight: 500;
+  }
+
+  .dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 780px) { .dashboard-stats { grid-template-columns: repeat(2, 1fr); } }
+  .dashboard-stat {
+    background: white;
+    border: 1px solid var(--border-soft);
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+  .dashboard-stat-val {
+    font-family: 'Fraunces', serif;
+    font-size: 32px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .dashboard-stat-lbl {
+    font-size: 12.5px;
+    color: var(--ink-4);
+    margin-top: 6px;
+  }
+
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 22px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 880px) { .dashboard-grid { grid-template-columns: 1fr; } }
+
+  .dashboard-panel {
+    background: white;
+    border: 1px solid var(--border-soft);
+    border-radius: 14px;
+    padding: 24px;
+  }
+  .dashboard-panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .dashboard-panel-title {
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    color: var(--ink);
+  }
+  .dashboard-panel-sub {
+    font-size: 12.5px;
+    color: var(--ink-4);
+  }
+
+  .dashboard-rec {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .dashboard-rec:last-child { border-bottom: none; padding-bottom: 4px; }
+  .dashboard-rec-rank {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    color: var(--ink-5);
+  }
+  .dashboard-rec-title {
+    font-weight: 500;
+    color: var(--ink);
+    font-size: 14.5px;
+    margin-bottom: 4px;
+  }
+  .dashboard-rec-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--ink-4);
+    margin-bottom: 6px;
+  }
+  .dashboard-rec-why {
+    font-size: 13px;
+    color: var(--ink-3);
+    line-height: 1.55;
+  }
+  .dashboard-rec-bridges {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .dashboard-bridge-pill {
+    padding: 3px 10px;
+    background: var(--paper-2);
+    border-radius: 999px;
+    font-size: 11.5px;
+    color: var(--ink-3);
+  }
+  .dashboard-bridge-pill.gap {
+    background: #fde2e2;
+    color: #b00020;
+  }
+
+  .dashboard-student-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .dashboard-skill-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    background: var(--paper-2);
+    border: 1px solid var(--border-soft);
+    border-radius: 999px;
+    font-size: 13px;
+    color: var(--ink-2);
+  }
+  .dashboard-skill-pill-weight {
+    margin-left: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-5);
+  }
+
+  .dashboard-alt-careers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 14px;
+  }
+  .dashboard-alt-career {
+    background: var(--paper-2);
+    border: 1px solid var(--border-soft);
+    border-radius: 11px;
+    padding: 16px;
+  }
+  .dashboard-alt-career-title {
+    font-weight: 500;
+    color: var(--ink);
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  .dashboard-alt-career-meta {
+    font-size: 11.5px;
+    color: var(--ink-4);
+    margin-bottom: 8px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .dashboard-alt-career-shared {
+    font-size: 12px;
+    color: var(--ink-3);
+    line-height: 1.5;
+  }
+
+  .dashboard-career-skills {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .dashboard-career-skill {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .dashboard-career-skill-name {
+    width: 200px;
+    font-size: 12.5px;
+    color: var(--ink-2);
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 0;
+  }
+  .dashboard-career-skill-bar {
+    flex: 1;
+    height: 16px;
+    background: var(--paper-2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .dashboard-career-skill-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--rust) 0%, var(--rust-deep) 100%);
+    border-radius: 4px;
+  }
+  .dashboard-career-skill-pct {
+    width: 50px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-4);
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .dashboard-transparency {
+    background: var(--paper-2);
+    border-radius: 12px;
+    padding: 22px 26px;
+    font-size: 13.5px;
+    color: var(--ink-3);
+    line-height: 1.65;
+  }
+  .dashboard-transparency strong { color: var(--ink); }
+  .dashboard-stats-row {
+    margin-top: 14px;
+    display: flex;
+    gap: 22px;
+    flex-wrap: wrap;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--ink-4);
+  }
+
+  .dashboard-footer {
+    margin: 32px 0 16px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
   /* ============== Dashboard Layout ============== */
   .dash {
     max-width: 1180px;
@@ -2272,9 +2546,13 @@
 
     <div class="save-bar" style="margin-top: 28px;">
       <div class="save-bar-text">
-        <strong>这份推荐是 PPR 算出来的。</strong>&nbsp; 想换目标或加更多已修课?
+        <strong>想看更全面的分析?</strong>&nbsp; 主面板有备选职业 / 技能版图 / 目标技能图谱 / 透明度说明。
       </div>
       <button class="btn btn-ghost" data-go="4">改一下目标</button>
+      <button class="btn btn-rust" id="goto-dashboard">
+        进入主面板
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
     </div>
 
     <div class="step-footer" style="margin-top: 28px;">
@@ -2290,416 +2568,76 @@
     </div>
   </section>
 
-  <!-- ============== STEP 6: DASHBOARD ============== -->
+  <!-- ============== STEP 6: COMPREHENSIVE DASHBOARD ============== -->
   <section class="step" data-step="6">
-    <div class="dash">
+    <div class="dashboard-wrap">
+      <div class="dashboard-header">
+        <div class="dashboard-eyebrow">SKILLPATH · 综合面板</div>
+        <h1 class="dashboard-title" id="dashboard-title">你的<em>选课规划</em>主面板</h1>
+        <div class="dashboard-chips" id="dashboard-chips"></div>
+      </div>
 
-      <!-- Hero -->
-      <div class="dash-hero">
-        <div class="dash-hero-left">
-          <div class="dash-greeting">
-            <span class="live-dot"></span>
-            下午好,Liu Zheng · 5 月 22 日 · 星期四
-          </div>
-          <h2 class="display" style="font-size: clamp(32px, 4.5vw, 50px); margin-bottom: 14px;">
-            正在向 <em>机器学习工程师</em><br/>稳步前进。
-          </h2>
-          <p class="lead-sm" style="margin-bottom: 0;">
-            你已经修完 18 门课,还差 12 门到达目标。下学期选课开放还有 <strong style="color: var(--ink);">14 天</strong>,你已经选好了 3 门。
-          </p>
+      <div class="dashboard-stats" id="dashboard-stats"></div>
 
-          <div class="dash-progress">
-            <div class="dash-progress-row">
-              <span class="dash-progress-label">向 ML 工程师整体进度</span>
-              <span class="dash-progress-val">62<span style="font-size: 14px; color: var(--ink-4); font-weight: 500;">%</span></span>
+      <div class="dashboard-grid">
+        <div class="dashboard-panel">
+          <div class="dashboard-panel-head">
+            <div>
+              <div class="dashboard-panel-title">下学期推荐</div>
+              <div class="dashboard-panel-sub">按 Personalized PageRank 分数排序</div>
             </div>
-            <div class="dash-progress-bar"><div class="dash-progress-fill" style="width: 62%;"></div></div>
-            <div class="dash-progress-step">从 32% 起步 → 完成本学期推荐课程后可达 <strong style="color: var(--rust); font-weight: 600;">78%</strong></div>
           </div>
+          <div id="dashboard-recs"></div>
         </div>
 
-        <div class="dash-hero-right">
-          <div class="dash-stats">
-            <div class="dash-stat">
-              <div class="dash-stat-lbl">本学期</div>
-              <div class="dash-stat-val">3<span class="unit"> 门</span></div>
-              <div class="dash-stat-foot">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-                已选课完成
-              </div>
-            </div>
-            <div class="dash-stat">
-              <div class="dash-stat-lbl">已修</div>
-              <div class="dash-stat-val">18<span class="unit"> / 30</span></div>
-              <div class="dash-stat-foot flat">总学分 62 / 120</div>
-            </div>
-            <div class="dash-stat">
-              <div class="dash-stat-lbl">技能匹配</div>
-              <div class="dash-stat-val">87<span class="unit">%</span></div>
-              <div class="dash-stat-foot">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
-                本月 +12%
-              </div>
-            </div>
-            <div class="dash-stat">
-              <div class="dash-stat-lbl">距毕业</div>
-              <div class="dash-stat-val">4<span class="unit"> 学期</span></div>
-              <div class="dash-stat-foot warn">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                约 540 天
-              </div>
+        <div class="dashboard-panel">
+          <div class="dashboard-panel-head">
+            <div>
+              <div class="dashboard-panel-title">你的技能版图</div>
+              <div class="dashboard-panel-sub">已修课程推断出的技能权重</div>
             </div>
           </div>
+          <div class="dashboard-student-skills" id="dashboard-student-skills"></div>
         </div>
       </div>
 
-      <!-- 3-column grid -->
-      <div class="dash-grid-3">
-        <!-- This term courses -->
-        <div class="dash-panel">
-          <div class="dash-panel-head">
-            <div>
-              <div class="dash-panel-title">本学期课程</div>
-              <div class="dash-panel-sub">2026 春季 · 进行中</div>
-            </div>
-            <a class="dash-panel-action">全部 →</a>
-          </div>
-
-          <div class="term-course done">
-            <div class="term-course-tick"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-            <div>
-              <div class="term-course-name">线性代数 II</div>
-              <div class="term-course-meta">3 学分 · 周三 14:00 · 已结课</div>
-            </div>
-            <span class="term-course-status status-done">已完成</span>
-          </div>
-
-          <div class="term-course">
-            <div class="term-course-tick"></div>
-            <div>
-              <div class="term-course-name">机器学习基础</div>
-              <div class="term-course-meta">3 学分 · 周一 / 周四 · 张老师</div>
-            </div>
-            <span class="term-course-status status-active">进行中 · 8/16</span>
-          </div>
-
-          <div class="term-course">
-            <div class="term-course-tick"></div>
-            <div>
-              <div class="term-course-name">大数据分析</div>
-              <div class="term-course-meta">4 学分 · 周二 / 周五 · 刘老师</div>
-            </div>
-            <span class="term-course-status status-active">进行中 · 7/16</span>
-          </div>
-
-          <div class="term-course">
-            <div class="term-course-tick"></div>
-            <div>
-              <div class="term-course-name">英语口语 III</div>
-              <div class="term-course-meta">2 学分 · 周三 16:00</div>
-            </div>
-            <span class="term-course-status status-active">进行中</span>
-          </div>
-        </div>
-
-        <!-- Skill growth -->
-        <div class="dash-panel">
-          <div class="dash-panel-head">
-            <div>
-              <div class="dash-panel-title">技能成长</div>
-              <div class="dash-panel-sub">最近 30 天</div>
-            </div>
-            <a class="dash-panel-action">详情 →</a>
-          </div>
-
-          <div class="skill-grow">
-            <div class="skill-grow-head">
-              <span class="skill-grow-name">机器学习</span>
-              <span class="skill-grow-delta">+3 级</span>
-            </div>
-            <div class="skill-grow-track">
-              <div class="skill-grow-curr" style="width: 50%;"></div>
-              <div class="skill-grow-prev" style="width: 20%;"></div>
-            </div>
-          </div>
-
-          <div class="skill-grow">
-            <div class="skill-grow-head">
-              <span class="skill-grow-name">大数据 / Spark</span>
-              <span class="skill-grow-delta">+2 级</span>
-            </div>
-            <div class="skill-grow-track">
-              <div class="skill-grow-curr" style="width: 40%;"></div>
-              <div class="skill-grow-prev" style="width: 20%;"></div>
-            </div>
-          </div>
-
-          <div class="skill-grow">
-            <div class="skill-grow-head">
-              <span class="skill-grow-name">线性代数</span>
-              <span class="skill-grow-delta">+1 级</span>
-            </div>
-            <div class="skill-grow-track">
-              <div class="skill-grow-curr" style="width: 75%;"></div>
-              <div class="skill-grow-prev" style="width: 65%;"></div>
-            </div>
-          </div>
-
-          <div class="skill-grow">
-            <div class="skill-grow-head">
-              <span class="skill-grow-name">Python</span>
-              <span class="skill-grow-delta flat">持平</span>
-            </div>
-            <div class="skill-grow-track">
-              <div class="skill-grow-curr" style="width: 70%;"></div>
-              <div class="skill-grow-prev" style="width: 70%;"></div>
-            </div>
-          </div>
-
-          <div class="skill-grow">
-            <div class="skill-grow-head">
-              <span class="skill-grow-name">统计学</span>
-              <span class="skill-grow-delta flat">尚未开始</span>
-            </div>
-            <div class="skill-grow-track">
-              <div class="skill-grow-curr" style="width: 30%;"></div>
-              <div class="skill-grow-prev" style="width: 30%;"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Action items / Next steps -->
-        <div class="dash-panel">
-          <div class="dash-panel-head">
-            <div>
-              <div class="dash-panel-title">该做的事</div>
-              <div class="dash-panel-sub">SkillPath 提醒</div>
-            </div>
-          </div>
-
-          <div class="action-item">
-            <div class="action-item-head">
-              <div class="action-icon urgent">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              </div>
-              <div class="action-title">秋季选课倒计时</div>
-            </div>
-            <div class="action-body">还有 <span class="deadline">14 天</span>。系统已为你准备好深度学习 + 统计学 + 云计算的清单,一键提交即可。</div>
-          </div>
-
-          <div class="action-item">
-            <div class="action-item-head">
-              <div class="action-icon tip">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-              </div>
-              <div class="action-title">想加速?试试这些</div>
-            </div>
-            <div class="action-body">Coursera 上的 <strong>Andrew Ng ML 课</strong> 跟你这学期的机器学习基础完美互补,有 19 名同校同学也在学。</div>
-          </div>
-
-          <div class="action-item">
-            <div class="action-item-head">
-              <div class="action-icon">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-              </div>
-              <div class="action-title">寒假实习</div>
-            </div>
-            <div class="action-body">字节、商汤、旷视的 ML 实习生岗位刚开放。基于你的进度,建议大三暑假冲一波。</div>
-          </div>
-
-          <div class="action-item">
-            <div class="action-item-head">
-              <div class="action-icon">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              </div>
-              <div class="action-title">和学长聊聊</div>
-            </div>
-            <div class="action-body">同专业已就业的 <strong>4 位 ML 工程师学长</strong> 愿意每周开放半小时聊学习路径。</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Path Timeline (compact) -->
-      <div class="path-section">
-        <div class="panel-head">
+      <div class="dashboard-panel" style="margin-bottom: 24px;">
+        <div class="dashboard-panel-head">
           <div>
-            <div class="panel-title">完整路径 · 4 学期</div>
-            <div class="panel-sub">基于你的目标自动生成 · 灵活可调</div>
-          </div>
-          <a class="dash-panel-action" data-go="4">改一下目标 →</a>
-        </div>
-
-        <div class="path-grid">
-          <div class="path-step now">
-            <div class="path-marker"></div>
-            <div class="path-sem">第 5 学期</div>
-            <div class="path-date">2026 春 · 现在</div>
-            <div class="path-course">机器学习基础 <span class="cr">3</span></div>
-            <div class="path-course">大数据分析 <span class="cr">4</span></div>
-            <div class="path-course">线性代数 II <span class="cr">3</span></div>
-          </div>
-
-          <div class="path-step">
-            <div class="path-marker"></div>
-            <div class="path-sem">第 6 学期</div>
-            <div class="path-date">2026 秋</div>
-            <div class="path-course">深度学习 <span class="cr">4</span></div>
-            <div class="path-course">统计学 <span class="cr">3</span></div>
-            <div class="path-course">云计算 <span class="cr">2</span></div>
-          </div>
-
-          <div class="path-step">
-            <div class="path-marker"></div>
-            <div class="path-sem">第 7 学期</div>
-            <div class="path-date">2027 春</div>
-            <div class="path-course">自然语言处理 <span class="cr">3</span></div>
-            <div class="path-course">MLOps 实战 <span class="cr">3</span></div>
-            <div class="path-course">最优化 <span class="cr">3</span></div>
-          </div>
-
-          <div class="path-step">
-            <div class="path-marker"></div>
-            <div class="path-sem">第 8 学期</div>
-            <div class="path-date">2027 秋</div>
-            <div class="path-course">毕业设计 <span class="cr">4</span></div>
-            <div class="path-course">ML 工程实践 <span class="cr">3</span></div>
-            <div class="path-course">企业实习 <span class="cr">6</span></div>
+            <div class="dashboard-panel-title">备选职业方向</div>
+            <div class="dashboard-panel-sub">按技能向量余弦相似度排序 · 过滤了 &lt; 3 个职位的长尾</div>
           </div>
         </div>
+        <div class="dashboard-alt-careers" id="dashboard-alt-careers"></div>
       </div>
 
-      <!-- Market pulse -->
-      <div class="pulse-section">
-        <div class="panel-head">
+      <div class="dashboard-panel" style="margin-bottom: 24px;">
+        <div class="dashboard-panel-head">
           <div>
-            <div class="panel-title">市场风向 · 这些技能在涨</div>
-            <div class="panel-sub">基于过去 30 天 ML 工程师岗位需求</div>
-          </div>
-          <a class="dash-panel-action">看完整报告 →</a>
-        </div>
-
-        <div class="pulse-grid">
-          <div class="pulse-card">
-            <div class="pulse-card-tag">// 新兴技能</div>
-            <div class="pulse-card-name">大语言模型</div>
-            <div class="pulse-card-delta up">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
-              +156%
-            </div>
-            <div class="pulse-card-spark">
-              <svg viewBox="0 0 100 28" preserveAspectRatio="none">
-                <polyline points="0,24 12,22 25,20 38,16 50,14 62,9 75,7 88,5 100,3" fill="none" stroke="#4d7c0f" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-              </svg>
-            </div>
-          </div>
-
-          <div class="pulse-card">
-            <div class="pulse-card-tag">// 持续上涨</div>
-            <div class="pulse-card-name">MLOps</div>
-            <div class="pulse-card-delta up">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
-              +42%
-            </div>
-            <div class="pulse-card-spark">
-              <svg viewBox="0 0 100 28" preserveAspectRatio="none">
-                <polyline points="0,22 12,20 25,18 38,16 50,14 62,11 75,8 88,7 100,5" fill="none" stroke="#4d7c0f" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-              </svg>
-            </div>
-          </div>
-
-          <div class="pulse-card">
-            <div class="pulse-card-tag">// 稳健</div>
-            <div class="pulse-card-name">PyTorch</div>
-            <div class="pulse-card-delta up">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
-              +24%
-            </div>
-            <div class="pulse-card-spark">
-              <svg viewBox="0 0 100 28" preserveAspectRatio="none">
-                <polyline points="0,18 12,17 25,15 38,16 50,14 62,12 75,11 88,10 100,9" fill="none" stroke="#4d7c0f" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-              </svg>
-            </div>
-          </div>
-
-          <div class="pulse-card">
-            <div class="pulse-card-tag">// 下滑</div>
-            <div class="pulse-card-name">Hadoop</div>
-            <div class="pulse-card-delta down">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/></svg>
-              -7%
-            </div>
-            <div class="pulse-card-spark">
-              <svg viewBox="0 0 100 28" preserveAspectRatio="none">
-                <polyline points="0,8 12,10 25,11 38,13 50,14 62,16 75,18 88,20 100,22" fill="none" stroke="#b85c38" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
-              </svg>
-            </div>
+            <div class="dashboard-panel-title" id="dashboard-career-skills-title">目标职业的技能要求</div>
+            <div class="dashboard-panel-sub">每条 = 该技能在该职业 JD 中的归一化频次</div>
           </div>
         </div>
+        <div class="dashboard-career-skills" id="dashboard-career-skills"></div>
       </div>
 
-      <!-- Activity feed -->
-      <div class="activity-section">
-        <div class="panel-head">
-          <div>
-            <div class="panel-title">最近动态</div>
-            <div class="panel-sub">你的 SkillPath 时间线</div>
-          </div>
-        </div>
-
-        <div class="activity-list">
-          <div class="activity">
-            <div class="activity-marker book">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-            </div>
-            <div class="activity-body">
-              你完成了 <strong>线性代数 II</strong>。这给 <span class="em">机器学习</span> 路径解锁了 <strong>2 门</strong>后续课程。
-            </div>
-            <div class="activity-time">2 天前</div>
-          </div>
-
-          <div class="activity">
-            <div class="activity-marker skill">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            </div>
-            <div class="activity-body">
-              你的 <strong>机器学习</strong> 技能从 L2 升到 <strong>L5</strong>。再上 1 门课就能匹配大部分 ML 实习的入门要求。
-            </div>
-            <div class="activity-time">5 天前</div>
-          </div>
-
-          <div class="activity">
-            <div class="activity-marker market">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-            </div>
-            <div class="activity-body">
-              市场提醒:<strong>LLM 工程师</strong> 岗位本月新增 <span class="em">2,847 条</span>。如果你对这方向感兴趣,可以考虑加上 NLP 课。
-            </div>
-            <div class="activity-time">1 周前</div>
-          </div>
-
-          <div class="activity">
-            <div class="activity-marker target">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-            </div>
-            <div class="activity-body">
-              你保存了 <span class="em">机器学习工程师</span> 作为职业目标。我们会一直陪你到达那里。
-            </div>
-            <div class="activity-time">2 周前</div>
-          </div>
-        </div>
+      <div class="dashboard-transparency">
+        <strong>推荐机制说明：</strong>
+        系统构建了一张包含 <strong id="dash-stat-nodes">—</strong> 个节点的异构图（课程 / 技能 / 职业 / 学生），
+        你的画像作为一个临时学生节点插入图中。<strong>Personalized PageRank</strong>
+        从你的学生节点 + 目标职业节点同时出发随机游走（damping α=0.85），
+        落在哪些课程节点上的概率最高，就是你的推荐。每门课的"推荐理由"来自 2-hop 路径追踪：
+        课程 → 技能 → 职业。
+        <div class="dashboard-stats-row" id="dash-stats-row"></div>
       </div>
 
-      <!-- Footer note -->
-      <div style="text-align: center; padding: 40px 20px 20px; color: var(--ink-4); font-size: 12.5px; line-height: 1.6;">
-        <div style="font-family: 'Fraunces', serif; font-style: italic; font-size: 15px; color: var(--ink-3); margin-bottom: 8px;">
-          "选课就像下棋,看一步走一步不行,得想三步以后。"
-        </div>
-        SkillPath · 在每个迷茫的选课季陪你做决定
+      <div class="dashboard-footer">
+        <button class="btn btn-ghost" data-go="4">改职业目标</button>
+        <button class="btn btn-ghost" data-go="2">重新上传</button>
+        <button class="btn btn-primary" data-go="5">回到推荐列表</button>
       </div>
-
     </div>
   </section>
-
 </main>
 
 <script>
@@ -3057,6 +2995,185 @@ window.__skillpath = window.__skillpath || {};
       btn.disabled = false;
     }
   });
+})();
+</script>
+
+<script>
+// ============= Dashboard (Step 6) =============
+(function wireDashboard() {
+  const dashBtn = document.getElementById('goto-dashboard');
+  if (!dashBtn) return;
+
+  function setStatLine(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+
+  function pct(value, max) {
+    if (!max) return 0;
+    return Math.max(2, Math.round((value / max) * 100));
+  }
+
+  function renderChips(profile, career) {
+    const chipsEl = document.getElementById('dashboard-chips');
+    if (!chipsEl) return;
+    const chips = [];
+    if (profile?.major) chips.push(['default', profile.major]);
+    if (profile?.year) chips.push(['default', '大' + profile.year]);
+    if (profile?.gpa != null) chips.push(['default', 'GPA ' + profile.gpa]);
+    chips.push(['target', '目标: ' + career]);
+    chipsEl.innerHTML = chips.map(([cls, t]) =>
+      `<span class="dashboard-chip ${cls === 'target' ? 'target' : ''}">${t}</span>`
+    ).join('');
+  }
+
+  function renderStats(data) {
+    const el = document.getElementById('dashboard-stats');
+    if (!el) return;
+    const bridgeSkills = new Set();
+    data.recommendations.forEach(r => r.bridge_skills.forEach(b => bridgeSkills.add(b.skill)));
+    const cells = [
+      [data.recommendations.length, '门推荐课程'],
+      [data.student_top_skills.length, '项你已掌握的技能'],
+      [bridgeSkills.size, '个桥梁技能 (推荐路径上)'],
+      [data.alternative_careers.length, '个备选职业方向'],
+    ];
+    el.innerHTML = cells.map(([val, lbl]) =>
+      `<div class="dashboard-stat"><div class="dashboard-stat-val">${val}</div><div class="dashboard-stat-lbl">${lbl}</div></div>`
+    ).join('');
+  }
+
+  function renderRecs(recs) {
+    const el = document.getElementById('dashboard-recs');
+    if (!el) return;
+    if (!recs.length) {
+      el.innerHTML = '<p style="color:var(--ink-4);font-size:13px">没有推荐结果。</p>';
+      return;
+    }
+    el.innerHTML = recs.map((r, i) => {
+      const bridges = (r.bridge_skills || []).slice(0, 4).map(b =>
+        `<span class="dashboard-bridge-pill ${b.is_gap ? 'gap' : ''}">${b.skill}</span>`
+      ).join('');
+      return `
+        <div class="dashboard-rec">
+          <div class="dashboard-rec-rank">${String(i+1).padStart(2,'0')}</div>
+          <div>
+            <div class="dashboard-rec-title">${r.name || r.code}</div>
+            <div class="dashboard-rec-meta">${r.code} · PPR ${r.score.toFixed(5)}</div>
+            <div class="dashboard-rec-why">${r.explanation || ''}</div>
+            ${bridges ? `<div class="dashboard-rec-bridges">${bridges}</div>` : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderStudentSkills(skills) {
+    const el = document.getElementById('dashboard-student-skills');
+    if (!el) return;
+    if (!skills.length) {
+      el.innerHTML = '<p style="color:var(--ink-4);font-size:13px">没有识别到已修课程，技能版图为空。</p>';
+      return;
+    }
+    el.innerHTML = skills.map(s =>
+      `<span class="dashboard-skill-pill">${s.skill}<span class="dashboard-skill-pill-weight">${s.weight}</span></span>`
+    ).join('');
+  }
+
+  function renderAltCareers(alts) {
+    const el = document.getElementById('dashboard-alt-careers');
+    if (!el) return;
+    if (!alts.length) {
+      el.innerHTML = '<p style="color:var(--ink-4);font-size:13px;padding:8px">没找到相似职业 — 目标职业的技能向量很特殊。</p>';
+      return;
+    }
+    el.innerHTML = alts.map(c => `
+      <div class="dashboard-alt-career">
+        <div class="dashboard-alt-career-title">${c.title}</div>
+        <div class="dashboard-alt-career-meta">相似度 ${c.similarity} · ${c.n_postings} 个职位 · 共 ${c.shared_skill_count} 个共享技能</div>
+        <div class="dashboard-alt-career-shared">共享: ${c.shared_skills_sample.join(', ')}</div>
+      </div>
+    `).join('');
+  }
+
+  function renderCareerSkills(career, skills) {
+    const titleEl = document.getElementById('dashboard-career-skills-title');
+    if (titleEl) titleEl.textContent = `「${career}」的技能要求`;
+    const el = document.getElementById('dashboard-career-skills');
+    if (!el) return;
+    if (!skills.length) {
+      el.innerHTML = '<p style="color:var(--ink-4);font-size:13px">该职业的 JD 数据稀疏，没有技能权重可展示。</p>';
+      return;
+    }
+    const max = Math.max(...skills.map(s => s.weight));
+    el.innerHTML = skills.map(s => {
+      const w = pct(s.weight, max);
+      return `
+        <div class="dashboard-career-skill">
+          <div class="dashboard-career-skill-name">${s.skill}</div>
+          <div class="dashboard-career-skill-bar"><div class="dashboard-career-skill-fill" style="width:${w}%"></div></div>
+          <div class="dashboard-career-skill-pct">${s.weight}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderTransparency(stats, nPostings, careerGoal) {
+    setStatLine('dash-stat-nodes', stats.total_nodes.toLocaleString());
+    const row = document.getElementById('dash-stats-row');
+    if (row) {
+      row.innerHTML = [
+        ['skill 节点', stats.n_skills.toLocaleString()],
+        ['course 节点', stats.n_courses.toLocaleString()],
+        ['career 节点', stats.n_careers.toLocaleString()],
+        ['student 节点', stats.n_students.toLocaleString() + ' (含你)'],
+        ['总边数', stats.total_edges.toLocaleString()],
+        [`「${careerGoal}」的 JD 数`, nPostings],
+      ].map(([k, v]) => `<span>${k}: <strong style="color:var(--ink-2)">${v}</strong></span>`).join('');
+    }
+  }
+
+  async function loadAndRender() {
+    const career_goal = document.getElementById('input-career-goal')?.value.trim();
+    if (!career_goal) {
+      alert('请先在第 3 步选定职业目标。');
+      goTo(4);
+      return;
+    }
+    const completed_raw = document.getElementById('input-completed-courses')?.value.trim() || '';
+    const completed_courses = completed_raw.split(/[,;\s]+/).filter(Boolean);
+
+    dashBtn.disabled = true;
+    dashBtn.textContent = '加载中…';
+    try {
+      const r = await fetch('/api/dashboard', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({career_goal, completed_courses, top_k: 10}),
+      });
+      const data = await r.json();
+      if (!r.ok) {
+        alert('加载失败: ' + (data.error || r.status));
+        return;
+      }
+      const profile = (window.__skillpath && window.__skillpath.profile) || null;
+      renderChips(profile, data.career_goal);
+      renderStats(data);
+      renderRecs(data.recommendations);
+      renderStudentSkills(data.student_top_skills);
+      renderAltCareers(data.alternative_careers);
+      renderCareerSkills(data.career_goal, data.career_top_skills);
+      renderTransparency(data.graph_stats, data.career_n_postings, data.career_goal);
+      goTo(6);
+    } catch (e) {
+      alert('错误: ' + e.message);
+    } finally {
+      dashBtn.disabled = false;
+      dashBtn.innerHTML = '进入主面板 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+    }
+  }
+
+  dashBtn.addEventListener('click', loadAndRender);
 })();
 </script>
 </body>
