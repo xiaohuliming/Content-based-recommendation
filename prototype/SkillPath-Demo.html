@@ -1717,44 +1717,54 @@
       <h2 class="headline">先认识一下,<em>你是谁</em>?</h2>
       <p class="lead-sm">这些信息只会用来为你计算合适的课程。你可以随时回来修改。</p>
 
+      <div class="form-section" style="background:#fef9e7;border:1px dashed #d4a017;padding:16px;border-radius:8px">
+        <label class="form-label">📄 上传你的成绩单（推荐，最快）</label>
+        <div class="form-hint">PDF 格式。我们会自动识别你的专业、年级、GPA 和已修课程。文件仅用于本次推荐，不存储。</div>
+        <div style="display:flex;gap:12px;align-items:center;margin-top:10px;flex-wrap:wrap">
+          <input id="transcript-file" type="file" accept=".pdf" />
+          <button id="transcript-upload-btn" type="button" class="btn btn-primary">识别成绩单</button>
+          <span id="transcript-status" style="color:#666;font-size:0.9em"></span>
+        </div>
+      </div>
+
       <div class="form-section">
         <label class="form-label">你的名字</label>
-        <input class="form-input" type="text" value="Liu Zheng / 刘正" placeholder="比如 张同学"/>
+        <input class="form-input" id="profile-name" type="text" value="Liu Zheng / 刘正" placeholder="比如 张同学"/>
       </div>
 
       <div class="form-section">
         <div class="form-row">
           <div>
             <label class="form-label">学校</label>
-            <input class="form-input" type="text" value="上海大学" />
+            <input class="form-input" id="profile-school" type="text" value="上海大学" />
           </div>
           <div>
             <label class="form-label">专业</label>
-            <input class="form-input" type="text" value="计算机科学" />
+            <input class="form-input" id="profile-major" type="text" value="计算机科学" />
           </div>
         </div>
       </div>
 
       <div class="form-section">
         <label class="form-label">你现在在哪个年级?</label>
-        <div class="pick-row" data-pick="grade">
-          <button class="pick-chip" type="button">大一</button>
-          <button class="pick-chip" type="button">大二</button>
-          <button class="pick-chip on" type="button">大三</button>
-          <button class="pick-chip" type="button">大四</button>
-          <button class="pick-chip" type="button">研究生</button>
+        <div class="pick-row" data-pick="grade" id="pick-grade">
+          <button class="pick-chip" type="button" data-year="1">大一</button>
+          <button class="pick-chip" type="button" data-year="2">大二</button>
+          <button class="pick-chip on" type="button" data-year="3">大三</button>
+          <button class="pick-chip" type="button" data-year="4">大四</button>
+          <button class="pick-chip" type="button" data-year="5">研究生</button>
         </div>
       </div>
 
       <div class="form-section">
         <label class="form-label">你大概的 GPA?</label>
         <div class="form-hint">仅用于挑选合适难度的课,我们不评判 ✿</div>
-        <div class="pick-row" data-pick="gpa">
-          <button class="pick-chip" type="button">3.0 以下</button>
-          <button class="pick-chip" type="button">3.0 – 3.5</button>
-          <button class="pick-chip on" type="button">3.5 – 3.8</button>
-          <button class="pick-chip" type="button">3.8 以上</button>
-          <button class="pick-chip" type="button">不想说</button>
+        <div class="pick-row" data-pick="gpa" id="pick-gpa">
+          <button class="pick-chip" type="button" data-gpa-max="3.0">3.0 以下</button>
+          <button class="pick-chip" type="button" data-gpa-min="3.0" data-gpa-max="3.5">3.0 – 3.5</button>
+          <button class="pick-chip on" type="button" data-gpa-min="3.5" data-gpa-max="3.8">3.5 – 3.8</button>
+          <button class="pick-chip" type="button" data-gpa-min="3.8">3.8 以上</button>
+          <button class="pick-chip" type="button" data-gpa-none>不想说</button>
         </div>
       </div>
 
@@ -2680,6 +2690,91 @@
       });
     } catch (e) {
       resultsEl.innerHTML = `<p style="color:red;padding:12px">${e.message}</p>`;
+    }
+  });
+})();
+</script>
+
+<script>
+// ============= Transcript upload =============
+(function wireTranscriptUpload() {
+  const fileInput = document.getElementById('transcript-file');
+  const btn = document.getElementById('transcript-upload-btn');
+  const status = document.getElementById('transcript-status');
+  if (!btn || !fileInput) return;
+
+  function setStatus(msg, color = '#666') {
+    if (status) { status.textContent = msg; status.style.color = color; }
+  }
+
+  function pickChipByPredicate(containerId, predicate) {
+    const container = document.getElementById(containerId);
+    if (!container) return false;
+    const chips = container.querySelectorAll('.pick-chip');
+    for (const chip of chips) {
+      if (predicate(chip)) {
+        chips.forEach((c) => c.classList.remove('on'));
+        chip.classList.add('on');
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function populateProfile(data) {
+    if (data.major) {
+      const m = document.getElementById('profile-major');
+      if (m) m.value = data.major;
+    }
+    if (data.year && data.year >= 1 && data.year <= 5) {
+      pickChipByPredicate('pick-grade', (c) => Number(c.dataset.year) === data.year);
+    }
+    if (data.gpa != null) {
+      const g = data.gpa;
+      pickChipByPredicate('pick-gpa', (c) => {
+        if (c.dataset.gpaNone !== undefined) return false;
+        const lo = c.dataset.gpaMin ? parseFloat(c.dataset.gpaMin) : -Infinity;
+        const hi = c.dataset.gpaMax ? parseFloat(c.dataset.gpaMax) : Infinity;
+        return g >= lo && g < hi;
+      });
+    }
+    // Push completed + current into the hidden input in Step 4
+    const allCourses = [
+      ...(data.completed_courses || []),
+      ...(data.current_courses || []),
+    ];
+    const cc = document.getElementById('input-completed-courses');
+    if (cc && allCourses.length) cc.value = allCourses.join(', ');
+  }
+
+  btn.addEventListener('click', async () => {
+    if (!fileInput.files || !fileInput.files[0]) {
+      setStatus('请先选择 PDF 文件', '#c33');
+      return;
+    }
+    const file = fileInput.files[0];
+    setStatus('正在识别…通常需要 10-30 秒');
+    btn.disabled = true;
+    try {
+      const form = new FormData();
+      form.append('file', file);
+      const r = await fetch('/api/transcript', { method: 'POST', body: form });
+      const data = await r.json();
+      if (!r.ok) {
+        setStatus(`失败: ${data.error || r.status}`, '#c33');
+        return;
+      }
+      const n_done = (data.completed_courses || []).length;
+      const n_cur = (data.current_courses || []).length;
+      populateProfile(data);
+      setStatus(
+        `✓ 已识别: ${data.major || '专业未识别'} · ${data.year ? '大' + data.year : '年级未识别'} · GPA ${data.gpa ?? '未识别'} · 已修 ${n_done} 门 · 在修 ${n_cur} 门`,
+        '#080'
+      );
+    } catch (e) {
+      setStatus(`错误: ${e.message}`, '#c33');
+    } finally {
+      btn.disabled = false;
     }
   });
 })();
