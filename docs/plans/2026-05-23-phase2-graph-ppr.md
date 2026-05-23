@@ -418,26 +418,43 @@ def remap_document_skills(
 
 
 def main() -> None:
-    """End-to-end: load Phase 1 outputs, cluster, prune, write Phase 2 canonical outputs."""
+    """End-to-end: load Phase 1 outputs, PRUNE FIRST, then cluster, then write outputs.
+
+    Why prune-first: empirical testing showed LSH on all 21K skills produces
+    transitive Union-Find runaway (largest cluster of 3,641 at threshold 0.6
+    even with exact-Jaccard verification). Pruning to doc_freq >= 5 first
+    drops the input to ~2,300 skills with much less common-suffix noise,
+    after which LSH+verify produces clean clusters (max size 4-6).
+    """
     PROJECT_ROOT = Path(__file__).resolve().parents[2]
     PHASE1 = PROJECT_ROOT / "output"
     PHASE2 = PROJECT_ROOT / "output" / "phase2"
     PHASE2.mkdir(parents=True, exist_ok=True)
+    MIN_DOC_FREQ = 5
 
     tax = pd.read_csv(PHASE1 / "skill_taxonomy.csv")
     freqs = dict(zip(tax["skill"], tax["doc_frequency"]))
-    skills = tax["skill"].tolist()
-    print(f"[1/4] Clustering {len(skills):,} skills via LSH (threshold=0.6)...")
-    clusters = cluster_skills(skills, threshold=0.6, num_perm=128, seed=42)
-    print(f"  → {len(clusters):,} clusters ({len(skills) - len(clusters):,} merges)")
+
+    print(f"[1/4] Pruning by doc_frequency >= {MIN_DOC_FREQ}...")
+    high_freq_skills = tax[tax["doc_frequency"] >= MIN_DOC_FREQ]["skill"].tolist()
+    print(f"  → {len(high_freq_skills):,} survive (from {len(tax):,} raw)")
+
+    print(f"[2/4] Clustering {len(high_freq_skills):,} skills via LSH"
+          f" (threshold=0.4, verify_threshold=0.7)...")
+    clusters = cluster_skills(
+        high_freq_skills,
+        threshold=0.4, verify_threshold=0.7, num_perm=128, seed=42,
+    )
+    print(f"  → {len(clusters):,} clusters ({len(high_freq_skills) - len(clusters):,} merges)")
 
     (PHASE2 / "skill_clusters.json").write_text(
         json.dumps({str(k): v for k, v in clusters.items()}, ensure_ascii=False, indent=2)
     )
 
-    print(f"[2/4] Building canonical taxonomy (min_doc_freq=5)...")
-    canon = build_canonical_taxonomy(clusters, freqs, min_doc_freq=5)
-    print(f"  → {len(canon):,} canonical skills survive prune")
+    print(f"[3/4] Building canonical taxonomy...")
+    # min_doc_freq is now redundant (we already pruned) but kept as a safety net at 1
+    canon = build_canonical_taxonomy(clusters, freqs, min_doc_freq=1)
+    print(f"  → {len(canon):,} canonical skills")
     canon_for_csv = canon.copy()
     canon_for_csv.loc[:, "variants"] = canon["variants"].apply(lambda v: ";".join(v))
     canon_for_csv.to_csv(PHASE2 / "skills_canonical.csv", index=False)
@@ -449,15 +466,13 @@ def main() -> None:
             skill_to_canonical[variant] = row["canonical_name"]
     valid = set(canon["canonical_name"])
 
-    print(f"[3/4] Remapping {len(skill_to_canonical):,} variants → canonical in courses...")
+    print(f"[4/4] Remapping {len(skill_to_canonical):,} variants → canonical in courses + jobs...")
     courses = pd.read_csv(PHASE1 / "courses_skills.csv")
     courses_canon = remap_document_skills(courses, "extracted_skills", skill_to_canonical, valid)
     courses_canon.loc[:, "canonical_skills"] = courses_canon["canonical_skills"].apply(lambda v: ";".join(v))
     courses_canon.drop(columns=["extracted_skills"]).to_csv(
         PHASE2 / "courses_canonical.csv", index=False
     )
-
-    print(f"[4/4] Remapping in jobs...")
     jobs = pd.read_csv(PHASE1 / "jobs_sample_skills.csv")
     jobs_canon = remap_document_skills(jobs, "extracted_skills", skill_to_canonical, valid)
     jobs_canon.loc[:, "canonical_skills"] = jobs_canon["canonical_skills"].apply(lambda v: ";".join(v))
@@ -483,7 +498,7 @@ pytest tests/test_apply_canonical.py -v
 python -m src.normalize.apply_canonical
 ```
 
-Expected stdout includes "X canonical skills survive prune" with X between 2,500–4,000. If the merge count looks insane (e.g., X < 500 or X > 18,000), the threshold is wrong — revisit Task 1 with different threshold values.
+Expected stdout: ~2,300 high-freq skills, then ~2,000–2,250 canonical clusters (some merges from LSH+verify). If the cluster count drops below 1,800 or the largest cluster reported anywhere exceeds 10, something is over-merging — revisit thresholds.
 
 - [ ] **Step 4: Commit**
 
