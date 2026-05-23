@@ -2632,16 +2632,32 @@
     da: '数据分析师',
     ai: 'AI 研究员',
   };
+  // Map each card to an English job title that actually exists in the loaded graph,
+  // so clicking auto-populates the API input field.
+  const careerApiTitles = {
+    ml: 'AI Engineer',
+    ds: 'Data Scientist',
+    be: 'Back End Developer',
+    fe: 'Front End Developer',
+    da: 'Data Analyst',
+    ai: 'Lead Machine Learning Researcher',
+  };
 
+  function selectCareerCard(card) {
+    document.querySelectorAll('.career').forEach((c) => c.classList.remove('on'));
+    card.classList.add('on');
+    const key = card.dataset.career;
+    const picked = document.getElementById('picked-career');
+    if (picked) picked.textContent = careerNames[key];
+    const apiInput = document.getElementById('input-career-goal');
+    if (apiInput && careerApiTitles[key]) apiInput.value = careerApiTitles[key];
+  }
   document.querySelectorAll('.career').forEach((card) => {
-    card.addEventListener('click', () => {
-      document.querySelectorAll('.career').forEach((c) => c.classList.remove('on'));
-      card.classList.add('on');
-      const key = card.dataset.career;
-      const picked = document.getElementById('picked-career');
-      if (picked) picked.textContent = careerNames[key];
-    });
+    card.addEventListener('click', () => selectCareerCard(card));
   });
+  // Pre-populate input from the default "on" card so first-submit works without re-clicking
+  const defaultCard = document.querySelector('.career.on');
+  if (defaultCard) selectCareerCard(defaultCard);
 
   // ============= Add to plan =============
   document.querySelectorAll('[data-add]').forEach((btn) => {
