@@ -1847,6 +1847,17 @@
       <h2 class="headline">你毕业后,<em>想成为什么</em>?</h2>
       <p class="lead-sm">选一个你最感兴趣的方向。我们会根据这个目标 + 你刚才填的信息,给你一份个性化建议。可以下一步还改。</p>
 
+      <div class="form-section" style="max-width: 540px; margin-bottom: 16px;">
+        <label class="form-label">职业目标 (英文，用于精准匹配 API)</label>
+        <input class="form-input" id="input-career-goal" type="text" list="career-goal-options" placeholder="e.g. Data Engineer, Machine Learning Engineer" />
+        <datalist id="career-goal-options"></datalist>
+      </div>
+
+      <div class="form-section" style="max-width: 540px; margin-bottom: 24px;">
+        <label class="form-label">已修课程代码 (逗号分隔)</label>
+        <input class="form-input" id="input-completed-courses" type="text" placeholder="COMP1003, MATH1003, ..." />
+      </div>
+
       <div class="careers" id="careers">
         <div class="career on" data-career="ml">
           <div class="career-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
@@ -1921,7 +1932,7 @@
           上一步
         </button>
         <span class="footer-hint" id="career-hint">已选: <strong id="picked-career">机器学习工程师</strong></span>
-        <button class="btn btn-primary" data-go="5">
+        <button class="btn btn-primary" id="submit-profile" data-go="5">
           看我的规划
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </button>
@@ -1958,6 +1969,9 @@
             <div class="panel-sub">按重要程度排序 · 点 + 加入我的计划</div>
           </div>
         </div>
+
+        <!-- API recommendation results injected here by wireSkillPath() -->
+        <div id="recommendation-results"></div>
 
         <div class="course">
           <div class="course-rank">01</div>
@@ -2638,6 +2652,65 @@
         : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
     });
   });
+</script>
+
+<script>
+(async function wireSkillPath() {
+  // Populate career-goal datalist on load
+  try {
+    const r = await fetch('/api/careers');
+    const data = await r.json();
+    const dl = document.getElementById('career-goal-options');
+    if (dl) {
+      dl.innerHTML = '';
+      for (const c of data.careers.slice(0, 200)) {
+        const opt = document.createElement('option');
+        opt.value = c;
+        dl.appendChild(opt);
+      }
+    }
+  } catch (e) { console.warn('careers fetch failed:', e); }
+
+  // Hook submit button
+  const submitBtn = document.getElementById('submit-profile');
+  const resultsEl = document.getElementById('recommendation-results');
+  if (!submitBtn || !resultsEl) return;
+
+  submitBtn.addEventListener('click', async (ev) => {
+    ev.preventDefault();
+    const career_goal = document.getElementById('input-career-goal').value.trim();
+    const completed_raw = document.getElementById('input-completed-courses').value.trim();
+    const completed_courses = completed_raw
+      ? completed_raw.split(/[,;\s]+/).filter(Boolean)
+      : [];
+    resultsEl.innerHTML = '<p style="padding:12px;color:var(--ink-3)">Computing recommendations…</p>';
+    try {
+      const r = await fetch('/api/recommend', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({career_goal, completed_courses, top_k: 10}),
+      });
+      const data = await r.json();
+      if (!r.ok) {
+        resultsEl.innerHTML = `<p style="color:red;padding:12px">${data.error || 'error'}</p>`;
+        return;
+      }
+      resultsEl.innerHTML = data.recommendations.map((rec, i) => `
+        <div class="course" style="border-bottom:1px solid var(--border-soft)">
+          <div class="course-rank">${String(i+1).padStart(2,'0')}</div>
+          <div class="course-body">
+            <div class="course-title">${rec.name || rec.code}</div>
+            <div class="course-meta-line"><span>PPR score: ${rec.score.toFixed(5)}</span><span>${rec.code}</span></div>
+            <div class="course-why">${rec.explanation || '(no explanation)'}</div>
+            ${rec.gap_skills && rec.gap_skills.length ? `<div class="course-fills">${rec.gap_skills.map(s=>`<span class="skill-pill">补齐 · ${s}</span>`).join('')}</div>` : ''}
+          </div>
+        </div>
+      `).join('');
+    } catch (e) {
+      resultsEl.innerHTML = `<p style="color:red;padding:12px">${e.message}</p>`;
+    }
+  });
+})();
 </script>
 </body>
 </html>
