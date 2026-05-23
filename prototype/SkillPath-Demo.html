@@ -1970,65 +1970,9 @@
           </div>
         </div>
 
-        <!-- API recommendation results injected here by wireSkillPath() -->
-        <div id="recommendation-results"></div>
-
-        <div id="course-mock">
-        <div class="course">
-          <div class="course-rank">01</div>
-          <div class="course-body">
-            <div class="course-title">机器学习基础</div>
-            <div class="course-meta-line"><span>3 学分</span><span>48 课时</span><span>张老师</span><span>★ 4.8 (230)</span></div>
-            <div class="course-why">这是你最缺的能力。市场上 89% 的 ML 岗位都要求这个,而你现在还没碰过。先修条件你都满足了 —— 直接选。</div>
-            <div class="course-fills">
-              <span class="skill-pill">补齐 · 机器学习</span>
-              <span class="skill-pill">补齐 · 统计基础</span>
-            </div>
-          </div>
-          <div class="course-action"><button class="add-btn" data-add><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button></div>
-        </div>
-
-        <div class="course">
-          <div class="course-rank">02</div>
-          <div class="course-body">
-            <div class="course-title">大数据分析</div>
-            <div class="course-meta-line"><span>4 学分</span><span>64 课时</span><span>刘老师</span><span>★ 4.9 (187)</span></div>
-            <div class="course-why">ML 工程师不只是会调模型,你得能处理"大"数据。这门课教你怎么在分布式系统上跑数据 —— 大厂面试必考。</div>
-            <div class="course-fills">
-              <span class="skill-pill">补齐 · 大数据 / Spark</span>
-              <span class="skill-pill warn">建议同期选</span>
-            </div>
-          </div>
-          <div class="course-action"><button class="add-btn" data-add><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="5 12 19 12"/></svg></button></div>
-        </div>
-
-        <div class="course">
-          <div class="course-rank">03</div>
-          <div class="course-body">
-            <div class="course-title">深度学习与最优化</div>
-            <div class="course-meta-line"><span>4 学分</span><span>64 课时</span><span>王老师</span><span>★ 4.7 (142)</span></div>
-            <div class="course-why">你想做的所有酷的 AI 应用,本质上都是深度学习。建议大三下或大四上学,先把机器学习基础学完。</div>
-            <div class="course-fills">
-              <span class="skill-pill">补齐 · 深度学习</span>
-              <span class="skill-pill warn">建议下学期</span>
-            </div>
-          </div>
-          <div class="course-action"><button class="add-btn" data-add><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button></div>
-        </div>
-
-        <div class="course">
-          <div class="course-rank">04</div>
-          <div class="course-body">
-            <div class="course-title">自然语言处理</div>
-            <div class="course-meta-line"><span>3 学分</span><span>48 课时</span><span>陈老师</span><span>★ 4.8 (168)</span></div>
-            <div class="course-why">这是当下最热的方向 —— ChatGPT 和大语言模型都在这里。最近 30 天相关岗位需求涨了 89%,选了不亏。</div>
-            <div class="course-fills">
-              <span class="skill-pill">加分 · NLP</span>
-              <span class="skill-pill warn">建议大四</span>
-            </div>
-          </div>
-          <div class="course-action"><button class="add-btn" data-add><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button></div>
-        </div>
+        <!-- All courses are rendered from /api/recommend; no mock data. -->
+        <div id="recommendation-results">
+          <p style="padding:16px;color:var(--ink-3)">填好上方的职业目标和已修课程，点"看我的规划"获取真实推荐。</p>
         </div>
       </div>
 
@@ -2713,8 +2657,6 @@
         resultsEl.innerHTML = `<p style="color:red;padding:12px">${data.error || 'error'}</p>`;
         return;
       }
-      const mock = document.getElementById('course-mock');
-      if (mock) mock.style.display = 'none';
       const plusSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
       const checkSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>';
       resultsEl.innerHTML = data.recommendations.map((rec, i) => `
