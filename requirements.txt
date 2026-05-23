@@ -9,3 +9,4 @@ python-dotenv==1.0.1
 datasketch>=1.6.5,<2.0
 scikit-learn>=1.5,<2.0
 networkx>=3.3,<4.0
+flask>=3.0,<4.0
