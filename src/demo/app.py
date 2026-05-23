@@ -26,7 +26,11 @@ from openai import OpenAI
 
 from src.demo.transcript import extract_transcript_text, parse_transcript_with_llm
 from src.demo.transient_student import add_transient_student
-from src.ppr.engine import recommend_courses
+from src.ppr.engine import (
+    find_similar_careers,
+    recommend_courses,
+    summarize_student_skills,
+)
 from src.ppr.explain import explain_recommendation, format_explanation
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -109,6 +113,92 @@ def create_app(graph_path: str | None = None) -> Flask:
             })
 
         return jsonify({"student_id": sid, "recommendations": results})
+
+    @app.post("/api/dashboard")
+    def dashboard():
+        """One-shot bundle for the comprehensive dashboard view.
+
+        Body: same as /api/recommend — {career_goal, completed_courses[], top_k=10}.
+        Returns: recommendations + similar_careers + student_top_skills + graph_stats.
+        """
+        payload = request.get_json(silent=True) or {}
+        career_goal = payload.get("career_goal")
+        completed = payload.get("completed_courses", []) or []
+        top_k = int(payload.get("top_k", 10))
+        if not career_goal:
+            return jsonify({"error": "career_goal required"}), 400
+
+        g: nx.DiGraph = app.config["GRAPH"]
+        career_node = f"career:{career_goal}"
+        if not g.has_node(career_node):
+            return jsonify({"error": f"unknown career: {career_goal}"}), 404
+
+        g_copy = copy.copy(g)
+        sid = add_transient_student(
+            g_copy,
+            completed_courses=completed,
+            student_id=f"DEMO_{secrets.token_hex(4)}",
+            career_goal=career_goal,
+        )
+
+        # Recommendations + per-rec explanations (same shape as /api/recommend)
+        recs = recommend_courses(g_copy, sid, career_node, top_k=top_k)
+        recommendations = []
+        for course_node, score in recs:
+            code = course_node.removeprefix("course:")
+            name = g_copy.nodes[course_node].get("name", "")
+            expl = explain_recommendation(g_copy, sid, career_node, course_node, top_n=5)
+            recommendations.append({
+                "code": code, "name": name, "score": round(score, 6),
+                "bridge_skills": expl["bridge_skills"],
+                "gap_skills": expl["gap_skills_filled"],
+                "explanation": format_explanation(expl, course_name=name),
+            })
+
+        # Student's top skills derived from completed courses
+        student_top_skills = summarize_student_skills(g_copy, sid, top_k=12)
+
+        # Career-graph stats (count node types)
+        nodes_by_type: dict[str, int] = {}
+        for _, d in g.nodes(data=True):
+            t = d.get("type")
+            if t:
+                nodes_by_type[t] = nodes_by_type.get(t, 0) + 1
+
+        # Alternative careers ranked by skill-vector cosine. min_postings filters
+        # out the long-tail one-off recruiter titles ("000198 - W2 Only - ...") that
+        # would otherwise dominate the list when the target is itself niche.
+        alt_careers = find_similar_careers(
+            g, career_node, top_k=5, min_shared=3, min_postings=3,
+        )
+
+        # All skills the target career needs (for the "career profile" panel)
+        career_needs: list[dict] = []
+        for _, skill_node, ed in g.out_edges(career_node, data=True):
+            if ed.get("edge_type") == "career-skill":
+                career_needs.append({
+                    "skill": skill_node.removeprefix("skill:"),
+                    "weight": round(ed["weight"], 4),
+                })
+        career_needs.sort(key=lambda r: -r["weight"])
+
+        return jsonify({
+            "student_id": sid,
+            "career_goal": career_goal,
+            "recommendations": recommendations,
+            "student_top_skills": student_top_skills,
+            "alternative_careers": alt_careers,
+            "career_top_skills": career_needs[:15],
+            "career_n_postings": int(g.nodes[career_node].get("n_postings", 0)),
+            "graph_stats": {
+                "total_nodes": g.number_of_nodes(),
+                "total_edges": g.number_of_edges(),
+                "n_skills": nodes_by_type.get("skill", 0),
+                "n_courses": nodes_by_type.get("course", 0),
+                "n_careers": nodes_by_type.get("career", 0),
+                "n_students": nodes_by_type.get("student", 0),
+            },
+        })
 
     @app.post("/api/transcript")
     def transcript():

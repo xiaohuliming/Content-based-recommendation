@@ -1,4 +1,5 @@
 """Personalized PageRank-based course recommendation."""
+import math
 from typing import Optional
 
 import networkx as nx
@@ -74,3 +75,75 @@ def recommend_courses(
 
     course_scores.sort(key=lambda x: -x[1])
     return course_scores[:top_k]
+
+
+def find_similar_careers(
+    g: nx.DiGraph,
+    target_career_node: str,
+    *,
+    top_k: int = 5,
+    min_shared: int = 3,
+    min_postings: int = 1,
+) -> list[dict]:
+    """Find careers whose skill-weight vector is most cosine-similar to the target.
+
+    Each career has outgoing career-skill edges with normalized weights.
+    Cosine over those weight vectors gives a "do these two jobs need similar skills"
+    score. `min_postings` filters out one-off recruiter listings that have a too-
+    specific title to be a meaningful alternative recommendation.
+    """
+    target_skills: dict[str, float] = {}
+    for _, skill_node, d in g.out_edges(target_career_node, data=True):
+        if d.get("edge_type") == "career-skill":
+            target_skills[skill_node] = d["weight"]
+    if not target_skills:
+        return []
+    norm_target = math.sqrt(sum(w * w for w in target_skills.values()))
+
+    scored: list[dict] = []
+    for n, data in g.nodes(data=True):
+        if data.get("type") != "career" or n == target_career_node:
+            continue
+        if int(data.get("n_postings", 0)) < min_postings:
+            continue
+        other_skills: dict[str, float] = {}
+        for _, sn, ed in g.out_edges(n, data=True):
+            if ed.get("edge_type") == "career-skill":
+                other_skills[sn] = ed["weight"]
+        shared = set(target_skills) & set(other_skills)
+        if len(shared) < min_shared:
+            continue
+        dot = sum(target_skills[s] * other_skills[s] for s in shared)
+        norm_other = math.sqrt(sum(w * w for w in other_skills.values()))
+        if norm_other == 0:
+            continue
+        scored.append({
+            "title": n.removeprefix("career:"),
+            "similarity": round(dot / (norm_target * norm_other), 4),
+            "shared_skill_count": len(shared),
+            "shared_skills_sample": sorted(s.removeprefix("skill:") for s in shared)[:6],
+            "n_postings": int(data.get("n_postings", 0)),
+        })
+    scored.sort(key=lambda x: -x["similarity"])
+    return scored[:top_k]
+
+
+def summarize_student_skills(
+    g: nx.DiGraph,
+    student_node: str,
+    *,
+    top_k: int = 10,
+) -> list[dict]:
+    """Return the student's top-k accumulated skills (inherited from completed courses).
+
+    Each entry: {skill, weight}. Sorted descending.
+    """
+    rows: list[dict] = []
+    for _, skill_node, d in g.out_edges(student_node, data=True):
+        if d.get("edge_type") == "student-skill":
+            rows.append({
+                "skill": skill_node.removeprefix("skill:"),
+                "weight": round(d["weight"], 4),
+            })
+    rows.sort(key=lambda r: -r["weight"])
+    return rows[:top_k]
