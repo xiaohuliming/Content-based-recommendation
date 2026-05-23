@@ -1556,6 +1556,130 @@
     flex-wrap: wrap;
   }
 
+  /* Sub-view switching */
+  .dashboard-view { display: none; }
+  .dashboard-view.active { display: block; }
+
+  /* Code pill (monospace, for course codes) */
+  .dashboard-code-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 8px;
+  }
+  .dashboard-code-pill {
+    padding: 8px 12px;
+    background: var(--paper-2);
+    border: 1px solid var(--border-soft);
+    border-radius: 7px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-2);
+    text-align: center;
+  }
+  .dashboard-code-pill.current {
+    background: var(--rust-bg);
+    border-color: var(--rust-soft);
+    color: var(--rust-deep);
+  }
+  .dashboard-empty {
+    padding: 18px;
+    color: var(--ink-4);
+    font-size: 13px;
+    text-align: center;
+    background: var(--paper-2);
+    border-radius: 8px;
+  }
+
+  /* Skill growth view */
+  .dashboard-skill-cloud {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .dashboard-skill-pill.warn {
+    background: #fde2e2;
+    border-color: #f4a8a8;
+    color: #b00020;
+  }
+  .dashboard-skill-pill.gain {
+    background: #e3f5dd;
+    border-color: #a3d99a;
+    color: #2e7d32;
+  }
+  .dashboard-bridge-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .dashboard-bridge-table th {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 500;
+    color: var(--ink-3);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .dashboard-bridge-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-soft);
+    color: var(--ink-2);
+  }
+  .dashboard-bridge-table tr:last-child td { border-bottom: none; }
+  .dashboard-bridge-table td.num {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--ink-3);
+    text-align: right;
+    width: 80px;
+  }
+  .dashboard-bridge-table td.gap {
+    color: #b00020;
+  }
+
+  /* Career goals view */
+  .dashboard-target-card {
+    background: linear-gradient(135deg, var(--rust-bg) 0%, #f9ead8 100%);
+    border: 1px solid var(--rust-soft);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 22px;
+  }
+  .dashboard-target-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--rust-deep);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .dashboard-target-name {
+    font-family: 'Fraunces', serif;
+    font-size: 26px;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .dashboard-target-stats {
+    display: flex; gap: 22px; flex-wrap: wrap;
+    font-size: 12.5px;
+    color: var(--rust-deep);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .dashboard-alt-career-action {
+    margin-top: 12px;
+    padding: 6px 12px;
+    background: white;
+    border: 1px solid var(--rust);
+    color: var(--rust);
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .dashboard-alt-career-action:hover {
+    background: var(--rust);
+    color: white;
+  }
+
   /* ============== Dashboard Layout ============== */
   .dash {
     max-width: 1180px;
@@ -2062,13 +2186,13 @@
     </div>
 
     <nav class="dash-nav" id="dashNav">
-      <a class="dash-nav-link active">
+      <a class="dash-nav-link active" data-view="overview">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
         主面板
       </a>
-      <a class="dash-nav-link">我的课</a>
-      <a class="dash-nav-link">技能成长</a>
-      <a class="dash-nav-link">职业目标</a>
+      <a class="dash-nav-link" data-view="courses">我的课</a>
+      <a class="dash-nav-link" data-view="skills">技能成长</a>
+      <a class="dash-nav-link" data-view="career">职业目标</a>
     </nav>
 
     <div style="display: flex; align-items: center; gap: 6px;">
@@ -2577,58 +2701,168 @@
         <div class="dashboard-chips" id="dashboard-chips"></div>
       </div>
 
-      <div class="dashboard-stats" id="dashboard-stats"></div>
+      <!-- ===== VIEW: OVERVIEW (default) ===== -->
+      <div class="dashboard-view active" data-view="overview">
+        <div class="dashboard-stats" id="dashboard-stats"></div>
 
-      <div class="dashboard-grid">
-        <div class="dashboard-panel">
+        <div class="dashboard-grid">
+          <div class="dashboard-panel">
+            <div class="dashboard-panel-head">
+              <div>
+                <div class="dashboard-panel-title">下学期推荐</div>
+                <div class="dashboard-panel-sub">按 Personalized PageRank 分数排序</div>
+              </div>
+            </div>
+            <div id="dashboard-recs"></div>
+          </div>
+
+          <div class="dashboard-panel">
+            <div class="dashboard-panel-head">
+              <div>
+                <div class="dashboard-panel-title">你的技能版图</div>
+                <div class="dashboard-panel-sub">已修课程推断出的技能权重</div>
+              </div>
+            </div>
+            <div class="dashboard-student-skills" id="dashboard-student-skills"></div>
+          </div>
+        </div>
+
+        <div class="dashboard-panel" style="margin-bottom: 24px;">
           <div class="dashboard-panel-head">
             <div>
-              <div class="dashboard-panel-title">下学期推荐</div>
-              <div class="dashboard-panel-sub">按 Personalized PageRank 分数排序</div>
+              <div class="dashboard-panel-title">备选职业方向</div>
+              <div class="dashboard-panel-sub">按技能向量余弦相似度排序 · 过滤了 &lt; 3 个职位的长尾</div>
             </div>
           </div>
-          <div id="dashboard-recs"></div>
+          <div class="dashboard-alt-careers" id="dashboard-alt-careers"></div>
         </div>
 
-        <div class="dashboard-panel">
+        <div class="dashboard-panel" style="margin-bottom: 24px;">
           <div class="dashboard-panel-head">
             <div>
-              <div class="dashboard-panel-title">你的技能版图</div>
-              <div class="dashboard-panel-sub">已修课程推断出的技能权重</div>
+              <div class="dashboard-panel-title" id="dashboard-career-skills-title">目标职业的技能要求</div>
+              <div class="dashboard-panel-sub">每条 = 该技能在该职业 JD 中的归一化频次</div>
             </div>
           </div>
-          <div class="dashboard-student-skills" id="dashboard-student-skills"></div>
+          <div class="dashboard-career-skills" id="dashboard-career-skills"></div>
+        </div>
+
+        <div class="dashboard-transparency">
+          <strong>推荐机制说明：</strong>
+          系统构建了一张包含 <strong id="dash-stat-nodes">—</strong> 个节点的异构图（课程 / 技能 / 职业 / 学生），
+          你的画像作为一个临时学生节点插入图中。<strong>Personalized PageRank</strong>
+          从你的学生节点 + 目标职业节点同时出发随机游走（damping α=0.85），
+          落在哪些课程节点上的概率最高，就是你的推荐。每门课的"推荐理由"来自 2-hop 路径追踪：
+          课程 → 技能 → 职业。
+          <div class="dashboard-stats-row" id="dash-stats-row"></div>
         </div>
       </div>
 
-      <div class="dashboard-panel" style="margin-bottom: 24px;">
-        <div class="dashboard-panel-head">
-          <div>
-            <div class="dashboard-panel-title">备选职业方向</div>
-            <div class="dashboard-panel-sub">按技能向量余弦相似度排序 · 过滤了 &lt; 3 个职位的长尾</div>
+      <!-- ===== VIEW: COURSES (我的课) ===== -->
+      <div class="dashboard-view" data-view="courses">
+        <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr;">
+          <div class="dashboard-panel">
+            <div class="dashboard-panel-head">
+              <div>
+                <div class="dashboard-panel-title">已修课程</div>
+                <div class="dashboard-panel-sub" id="courses-done-count">— 门</div>
+              </div>
+            </div>
+            <div id="courses-done-grid"></div>
+          </div>
+          <div class="dashboard-panel">
+            <div class="dashboard-panel-head">
+              <div>
+                <div class="dashboard-panel-title">本学期在修</div>
+                <div class="dashboard-panel-sub" id="courses-current-count">— 门</div>
+              </div>
+            </div>
+            <div id="courses-current-grid"></div>
           </div>
         </div>
-        <div class="dashboard-alt-careers" id="dashboard-alt-careers"></div>
+
+        <div class="dashboard-panel" style="margin-bottom: 24px;">
+          <div class="dashboard-panel-head">
+            <div>
+              <div class="dashboard-panel-title">本次推荐的下学期课</div>
+              <div class="dashboard-panel-sub">来自 Personalized PageRank · 与"主面板"同源</div>
+            </div>
+          </div>
+          <div id="courses-recs-list"></div>
+        </div>
       </div>
 
-      <div class="dashboard-panel" style="margin-bottom: 24px;">
-        <div class="dashboard-panel-head">
-          <div>
-            <div class="dashboard-panel-title" id="dashboard-career-skills-title">目标职业的技能要求</div>
-            <div class="dashboard-panel-sub">每条 = 该技能在该职业 JD 中的归一化频次</div>
+      <!-- ===== VIEW: SKILLS (技能成长) ===== -->
+      <div class="dashboard-view" data-view="skills">
+        <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr;">
+          <div class="dashboard-panel">
+            <div class="dashboard-panel-head">
+              <div>
+                <div class="dashboard-panel-title">你现在已掌握</div>
+                <div class="dashboard-panel-sub">已修课推断出的技能 · 按权重排序</div>
+              </div>
+            </div>
+            <div class="dashboard-skill-cloud" id="skills-current-cloud"></div>
+          </div>
+          <div class="dashboard-panel">
+            <div class="dashboard-panel-head">
+              <div>
+                <div class="dashboard-panel-title">推完所有推荐课后将新增</div>
+                <div class="dashboard-panel-sub">推荐课覆盖的技能 ∩ 目标职业需要 \ 你已有</div>
+              </div>
+            </div>
+            <div class="dashboard-skill-cloud" id="skills-gain-cloud"></div>
           </div>
         </div>
-        <div class="dashboard-career-skills" id="dashboard-career-skills"></div>
+
+        <div class="dashboard-panel" style="margin-bottom: 24px;">
+          <div class="dashboard-panel-head">
+            <div>
+              <div class="dashboard-panel-title">桥梁技能详情</div>
+              <div class="dashboard-panel-sub">每个技能横跨多少门推荐课 · 总 PPR 桥梁分</div>
+            </div>
+          </div>
+          <table class="dashboard-bridge-table">
+            <thead>
+              <tr>
+                <th>技能</th>
+                <th>状态</th>
+                <th style="text-align:right">命中课程数</th>
+                <th style="text-align:right">桥梁总分</th>
+              </tr>
+            </thead>
+            <tbody id="skills-bridge-table-body"></tbody>
+          </table>
+        </div>
       </div>
 
-      <div class="dashboard-transparency">
-        <strong>推荐机制说明：</strong>
-        系统构建了一张包含 <strong id="dash-stat-nodes">—</strong> 个节点的异构图（课程 / 技能 / 职业 / 学生），
-        你的画像作为一个临时学生节点插入图中。<strong>Personalized PageRank</strong>
-        从你的学生节点 + 目标职业节点同时出发随机游走（damping α=0.85），
-        落在哪些课程节点上的概率最高，就是你的推荐。每门课的"推荐理由"来自 2-hop 路径追踪：
-        课程 → 技能 → 职业。
-        <div class="dashboard-stats-row" id="dash-stats-row"></div>
+      <!-- ===== VIEW: CAREER (职业目标) ===== -->
+      <div class="dashboard-view" data-view="career">
+        <div class="dashboard-target-card">
+          <div class="dashboard-target-eyebrow">当前目标</div>
+          <div class="dashboard-target-name" id="career-target-name">—</div>
+          <div class="dashboard-target-stats" id="career-target-stats"></div>
+        </div>
+
+        <div class="dashboard-panel" style="margin-bottom: 24px;">
+          <div class="dashboard-panel-head">
+            <div>
+              <div class="dashboard-panel-title" id="career-full-skills-title">完整技能要求</div>
+              <div class="dashboard-panel-sub">该职业 JD 中提到的所有技能 · 归一化频次</div>
+            </div>
+          </div>
+          <div class="dashboard-career-skills" id="career-full-skills"></div>
+        </div>
+
+        <div class="dashboard-panel" style="margin-bottom: 24px;">
+          <div class="dashboard-panel-head">
+            <div>
+              <div class="dashboard-panel-title">备选职业 · 点击切换</div>
+              <div class="dashboard-panel-sub">换一个目标，整个 dashboard 实时重新计算</div>
+            </div>
+          </div>
+          <div class="dashboard-alt-careers" id="career-alt-careers"></div>
+        </div>
       </div>
 
       <div class="dashboard-footer">
@@ -3133,7 +3367,203 @@ window.__skillpath = window.__skillpath || {};
     }
   }
 
-  async function loadAndRender() {
+  // ===== Sub-view renderers =====
+  function renderCoursesView(data, profile) {
+    const completed = profile?.completed_courses || [];
+    const current = profile?.current_courses || [];
+
+    const doneCount = document.getElementById('courses-done-count');
+    if (doneCount) doneCount.textContent = completed.length + ' 门';
+    const doneGrid = document.getElementById('courses-done-grid');
+    if (doneGrid) {
+      if (completed.length) {
+        const sorted = [...completed].sort();
+        doneGrid.innerHTML = `<div class="dashboard-code-grid">${sorted.map(c => `<div class="dashboard-code-pill">${c}</div>`).join('')}</div>`;
+      } else {
+        doneGrid.innerHTML = '<div class="dashboard-empty">没有识别到已修课 — 请先上传成绩单或手动填课程代码。</div>';
+      }
+    }
+
+    const curCount = document.getElementById('courses-current-count');
+    if (curCount) curCount.textContent = current.length + ' 门';
+    const curGrid = document.getElementById('courses-current-grid');
+    if (curGrid) {
+      if (current.length) {
+        const sorted = [...current].sort();
+        curGrid.innerHTML = `<div class="dashboard-code-grid">${sorted.map(c => `<div class="dashboard-code-pill current">${c}</div>`).join('')}</div>`;
+      } else {
+        curGrid.innerHTML = '<div class="dashboard-empty">本学期在修信息只在上传成绩单时识别。</div>';
+      }
+    }
+
+    const recsList = document.getElementById('courses-recs-list');
+    if (recsList) {
+      recsList.innerHTML = data.recommendations.map((r, i) => `
+        <div class="dashboard-rec">
+          <div class="dashboard-rec-rank">${String(i+1).padStart(2,'0')}</div>
+          <div>
+            <div class="dashboard-rec-title">${r.name || r.code}</div>
+            <div class="dashboard-rec-meta">${r.code} · PPR ${r.score.toFixed(5)}</div>
+            <div class="dashboard-rec-why">${r.explanation || ''}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+  }
+
+  function renderSkillsView(data) {
+    // Current skills cloud
+    const currentEl = document.getElementById('skills-current-cloud');
+    if (currentEl) {
+      if (data.student_top_skills.length) {
+        currentEl.innerHTML = data.student_top_skills.map(s =>
+          `<span class="dashboard-skill-pill">${s.skill}<span class="dashboard-skill-pill-weight">${s.weight}</span></span>`
+        ).join('');
+      } else {
+        currentEl.innerHTML = '<div class="dashboard-empty">没有已修课程，无法推断技能。</div>';
+      }
+    }
+
+    // Skills to gain: aggregate bridge_skills across all recs where is_gap=true
+    const gainAgg = new Map();
+    data.recommendations.forEach(r => {
+      (r.bridge_skills || []).forEach(b => {
+        if (!b.is_gap) return;
+        const cur = gainAgg.get(b.skill) || {totalScore: 0, count: 0};
+        cur.totalScore += b.score;
+        cur.count += 1;
+        gainAgg.set(b.skill, cur);
+      });
+    });
+    const gainSorted = Array.from(gainAgg.entries())
+      .map(([skill, v]) => ({skill, ...v}))
+      .sort((a, b) => b.totalScore - a.totalScore);
+
+    const gainEl = document.getElementById('skills-gain-cloud');
+    if (gainEl) {
+      if (gainSorted.length) {
+        gainEl.innerHTML = gainSorted.map(s =>
+          `<span class="dashboard-skill-pill gain">${s.skill}<span class="dashboard-skill-pill-weight">+${s.totalScore.toFixed(2)}</span></span>`
+        ).join('');
+      } else {
+        gainEl.innerHTML = '<div class="dashboard-empty">推荐课没有覆盖目标职业的新技能 — 可能职业目标和已修课重叠较多。</div>';
+      }
+    }
+
+    // Bridge skills table (all, not just gaps)
+    const bridgeAgg = new Map();
+    data.recommendations.forEach(r => {
+      (r.bridge_skills || []).forEach(b => {
+        const cur = bridgeAgg.get(b.skill) || {totalScore: 0, count: 0, isGap: b.is_gap};
+        cur.totalScore += b.score;
+        cur.count += 1;
+        cur.isGap = cur.isGap || b.is_gap;
+        bridgeAgg.set(b.skill, cur);
+      });
+    });
+    const bridgeSorted = Array.from(bridgeAgg.entries())
+      .map(([skill, v]) => ({skill, ...v}))
+      .sort((a, b) => b.totalScore - a.totalScore);
+
+    const tbody = document.getElementById('skills-bridge-table-body');
+    if (tbody) {
+      if (bridgeSorted.length) {
+        tbody.innerHTML = bridgeSorted.map(b => `
+          <tr>
+            <td class="${b.isGap ? 'gap' : ''}">${b.skill}</td>
+            <td>${b.isGap ? '<span style="color:#b00020">缺口</span>' : '<span style="color:#2e7d32">已有</span>'}</td>
+            <td class="num">${b.count}</td>
+            <td class="num">${b.totalScore.toFixed(3)}</td>
+          </tr>
+        `).join('');
+      } else {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--ink-4);padding:20px">没有桥梁技能 — 推荐课与目标职业无技能交集。</td></tr>';
+      }
+    }
+  }
+
+  function renderCareerView(data) {
+    document.getElementById('career-target-name').textContent = data.career_goal;
+    const stats = document.getElementById('career-target-stats');
+    if (stats) {
+      stats.innerHTML = [
+        ['JD 数量', data.career_n_postings],
+        ['核心技能数', data.career_top_skills.length],
+        ['图中相似职业', data.alternative_careers.length + ' (top 5)'],
+      ].map(([k, v]) => `<span>${k}: <strong>${v}</strong></span>`).join('');
+    }
+
+    // Career full skills (use all returned, not just top 15)
+    document.getElementById('career-full-skills-title').textContent = `「${data.career_goal}」的完整技能要求`;
+    const skillsEl = document.getElementById('career-full-skills');
+    const skills = data.career_top_skills;
+    if (skillsEl) {
+      if (skills.length) {
+        const max = Math.max(...skills.map(s => s.weight));
+        skillsEl.innerHTML = skills.map(s => {
+          const w = pct(s.weight, max);
+          return `
+            <div class="dashboard-career-skill">
+              <div class="dashboard-career-skill-name">${s.skill}</div>
+              <div class="dashboard-career-skill-bar"><div class="dashboard-career-skill-fill" style="width:${w}%"></div></div>
+              <div class="dashboard-career-skill-pct">${s.weight}</div>
+            </div>
+          `;
+        }).join('');
+      } else {
+        skillsEl.innerHTML = '<div class="dashboard-empty">该职业的 JD 数据稀疏。</div>';
+      }
+    }
+
+    // Alt careers with switch action
+    const altEl = document.getElementById('career-alt-careers');
+    if (altEl) {
+      if (data.alternative_careers.length) {
+        altEl.innerHTML = data.alternative_careers.map(c => `
+          <div class="dashboard-alt-career">
+            <div class="dashboard-alt-career-title">${c.title}</div>
+            <div class="dashboard-alt-career-meta">相似度 ${c.similarity} · ${c.n_postings} 个职位 · 共 ${c.shared_skill_count} 个技能</div>
+            <div class="dashboard-alt-career-shared">共享: ${c.shared_skills_sample.join(', ')}</div>
+            <button class="dashboard-alt-career-action" data-switch-career="${c.title.replace(/"/g, '&quot;')}">切换到此职业 →</button>
+          </div>
+        `).join('');
+
+        // Wire switch buttons
+        altEl.querySelectorAll('[data-switch-career]').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const newCareer = btn.dataset.switchCareer;
+            const careerInput = document.getElementById('input-career-goal');
+            if (careerInput) careerInput.value = newCareer;
+            btn.disabled = true; btn.textContent = '加载中…';
+            await loadAndRender({skipGoto: true});
+            // Stay on career view
+            switchView('career');
+          });
+        });
+      } else {
+        altEl.innerHTML = '<div class="dashboard-empty">没有相似职业（技能向量太特殊）。</div>';
+      }
+    }
+  }
+
+  // ===== Tab switching =====
+  function switchView(viewName) {
+    document.querySelectorAll('#dashNav .dash-nav-link').forEach(a => {
+      a.classList.toggle('active', a.dataset.view === viewName);
+    });
+    document.querySelectorAll('.dashboard-view').forEach(v => {
+      v.classList.toggle('active', v.dataset.view === viewName);
+    });
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+  document.querySelectorAll('#dashNav .dash-nav-link').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (a.dataset.view) switchView(a.dataset.view);
+    });
+  });
+
+  async function loadAndRender(opts = {}) {
     const career_goal = document.getElementById('input-career-goal')?.value.trim();
     if (!career_goal) {
       alert('请先在第 3 步选定职业目标。');
@@ -3157,6 +3587,7 @@ window.__skillpath = window.__skillpath || {};
         return;
       }
       const profile = (window.__skillpath && window.__skillpath.profile) || null;
+      // Overview view
       renderChips(profile, data.career_goal);
       renderStats(data);
       renderRecs(data.recommendations);
@@ -3164,7 +3595,15 @@ window.__skillpath = window.__skillpath || {};
       renderAltCareers(data.alternative_careers);
       renderCareerSkills(data.career_goal, data.career_top_skills);
       renderTransparency(data.graph_stats, data.career_n_postings, data.career_goal);
-      goTo(6);
+      // Sub-views
+      renderCoursesView(data, profile);
+      renderSkillsView(data);
+      renderCareerView(data);
+      // Reset to overview on first load
+      if (!opts.skipGoto) {
+        switchView('overview');
+        goTo(6);
+      }
     } catch (e) {
       alert('错误: ' + e.message);
     } finally {
@@ -3173,7 +3612,7 @@ window.__skillpath = window.__skillpath || {};
     }
   }
 
-  dashBtn.addEventListener('click', loadAndRender);
+  dashBtn.addEventListener('click', () => loadAndRender());
 })();
 </script>
 </body>
