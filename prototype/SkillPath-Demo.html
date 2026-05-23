@@ -1762,18 +1762,18 @@
 
       <div class="form-section">
         <label class="form-label">你的名字</label>
-        <input class="form-input" id="profile-name" type="text" value="Liu Zheng / 刘正" placeholder="比如 张同学"/>
+        <input class="form-input" id="profile-name" type="text" placeholder="比如 张同学"/>
       </div>
 
       <div class="form-section">
         <div class="form-row">
           <div>
             <label class="form-label">学校</label>
-            <input class="form-input" id="profile-school" type="text" value="上海大学" />
+            <input class="form-input" id="profile-school" type="text" placeholder="比如 UIC / 北京师范大学" />
           </div>
           <div>
             <label class="form-label">专业</label>
-            <input class="form-input" id="profile-major" type="text" value="计算机科学" />
+            <input class="form-input" id="profile-major" type="text" placeholder="比如 计算机科学 / Artificial Intelligence" />
           </div>
         </div>
       </div>
@@ -1988,17 +1988,11 @@
     <!-- Result Hero -->
     <div class="result-hero">
       <div class="result-hero-content">
-        <div class="result-meta">为 Liu Zheng · 大三 · 计算机科学 · 生成于今天</div>
-        <h2 class="headline" style="margin-bottom: 10px;">你离<em>机器学习工程师</em><br/>还差<em>这几门课</em>。</h2>
-        <p class="lead-sm" style="margin-bottom: 0;">我们分析了 120 万条岗位描述,对比了你现在的能力。下面是为你量身定制的建议 —— 一份你可以直接去选课系统里报的清单。</p>
-
-        <div class="result-match">
-          <div class="result-match-val">87%</div>
-          <div class="result-match-lbl">
-            <strong>这条路适合你</strong><br/>
-            如果你按下面的规划走完,毕业时你的画像就能匹配市场上 95% 的 ML 工程师岗位需求。
-          </div>
-        </div>
+        <div class="result-meta" id="result-meta">先在上一步选职业目标，再回来这里看推荐</div>
+        <h2 class="headline" style="margin-bottom: 10px;">
+          <span id="result-headline">你下学期该上的<em>课</em></span>
+        </h2>
+        <p class="lead-sm" style="margin-bottom: 0;">基于 5,000 条真实 LinkedIn 招聘 + 1,397 门 UIC 课程构建的异构图，跑 Personalized PageRank 得到下面这份推荐。每门课都解释了为什么推给你。</p>
       </div>
     </div>
 
@@ -2009,122 +2003,35 @@
         <div class="panel-head">
           <div>
             <div class="panel-title">推荐你下学期上这几门</div>
-            <div class="panel-sub">按重要程度排序 · 点 + 加入我的计划</div>
+            <div class="panel-sub">按 PageRank 分数排序 · 点 + 加入计划</div>
           </div>
         </div>
 
         <!-- All courses are rendered from /api/recommend; no mock data. -->
         <div id="recommendation-results">
-          <p style="padding:16px;color:var(--ink-3)">填好上方的职业目标和已修课程，点"看我的规划"获取真实推荐。</p>
+          <p style="padding:16px;color:var(--ink-3)">填好上方的职业目标，点"看我的规划"获取真实推荐。</p>
         </div>
       </div>
 
-      <!-- Skill Gap -->
+      <!-- Bridge / Gap Skills -->
       <div class="panel">
         <div class="panel-head">
           <div>
-            <div class="panel-title">你和 ML 工程师之间的距离</div>
-            <div class="panel-sub">黑线 = 岗位要求 · 颜色条 = 你现在</div>
+            <div class="panel-title" id="gap-panel-title">你和目标职业的技能桥梁</div>
+            <div class="panel-sub">PPR 在推荐时穿过的 skill 节点 · 红色 = 你还没有</div>
           </div>
         </div>
-
-        <div class="gap-row">
-          <div class="gap-head"><span class="gap-name">机器学习</span><span class="gap-val">差很多</span></div>
-          <div class="gap-track"><div class="gap-fill critical" style="width: 20%;"></div><div class="gap-target" style="left: 90%;"></div></div>
-        </div>
-        <div class="gap-row">
-          <div class="gap-head"><span class="gap-name">深度学习</span><span class="gap-val">差很多</span></div>
-          <div class="gap-track"><div class="gap-fill critical" style="width: 10%;"></div><div class="gap-target" style="left: 90%;"></div></div>
-        </div>
-        <div class="gap-row">
-          <div class="gap-head"><span class="gap-name">大数据 / Spark</span><span class="gap-val">差不少</span></div>
-          <div class="gap-track"><div class="gap-fill warn" style="width: 20%;"></div><div class="gap-target" style="left: 70%;"></div></div>
-        </div>
-        <div class="gap-row">
-          <div class="gap-head"><span class="gap-name">统计学</span><span class="gap-val">差一些</span></div>
-          <div class="gap-track"><div class="gap-fill warn" style="width: 30%;"></div><div class="gap-target" style="left: 70%;"></div></div>
-        </div>
-        <div class="gap-row">
-          <div class="gap-head"><span class="gap-name">数学基础</span><span class="gap-val">还行</span></div>
-          <div class="gap-track"><div class="gap-fill warn" style="width: 50%;"></div><div class="gap-target" style="left: 70%;"></div></div>
-        </div>
-        <div class="gap-row">
-          <div class="gap-head"><span class="gap-name">Python</span><span class="gap-val">已经不错</span></div>
-          <div class="gap-track"><div class="gap-fill ok" style="width: 70%;"></div><div class="gap-target" style="left: 80%;"></div></div>
-        </div>
-        <div class="gap-row">
-          <div class="gap-head"><span class="gap-name">SQL</span><span class="gap-val">已经不错</span></div>
-          <div class="gap-track"><div class="gap-fill ok" style="width: 60%;"></div><div class="gap-target" style="left: 60%;"></div></div>
-        </div>
-
-        <div style="margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border-soft); font-size: 12.5px; color: var(--ink-3); line-height: 1.55;">
-          <strong style="color: var(--ink);">坦白说:</strong> 你的编程基础已经够了,但 ML 这块还是一片空白 —— 这就是为什么 #1 是机器学习基础,而不是更花哨的课程。
+        <div id="gap-skills-container">
+          <p style="padding:16px;color:var(--ink-3);font-size:13px">提交职业目标后这里会展示技能差距分析。</p>
         </div>
       </div>
     </div>
 
-    <!-- Path Timeline -->
-    <div class="path-section">
-      <div class="panel-head">
-        <div>
-          <div class="panel-title">未来四个学期 · 完整路径</div>
-          <div class="panel-sub">从现在到毕业 · 总 38 学分</div>
-        </div>
-        <button class="btn btn-ghost" style="padding: 8px 14px; font-size: 12.5px;">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          导出 PDF
-        </button>
+    <div class="save-bar" style="margin-top: 28px;">
+      <div class="save-bar-text">
+        <strong>这份推荐是 PPR 算出来的。</strong>&nbsp; 想换目标或加更多已修课?
       </div>
-
-      <div class="path-grid">
-        <div class="path-step now">
-          <div class="path-marker"></div>
-          <div class="path-sem">第 5 学期</div>
-          <div class="path-date">2026 春 · 现在</div>
-          <div class="path-course">机器学习基础 <span class="cr">3</span></div>
-          <div class="path-course">大数据分析 <span class="cr">4</span></div>
-          <div class="path-course">线性代数 II <span class="cr">3</span></div>
-        </div>
-
-        <div class="path-step">
-          <div class="path-marker"></div>
-          <div class="path-sem">第 6 学期</div>
-          <div class="path-date">2026 秋</div>
-          <div class="path-course">深度学习 <span class="cr">4</span></div>
-          <div class="path-course">统计学 <span class="cr">3</span></div>
-          <div class="path-course">云计算 <span class="cr">2</span></div>
-        </div>
-
-        <div class="path-step">
-          <div class="path-marker"></div>
-          <div class="path-sem">第 7 学期</div>
-          <div class="path-date">2027 春</div>
-          <div class="path-course">自然语言处理 <span class="cr">3</span></div>
-          <div class="path-course">MLOps 实战 <span class="cr">3</span></div>
-          <div class="path-course">最优化 <span class="cr">3</span></div>
-        </div>
-
-        <div class="path-step">
-          <div class="path-marker"></div>
-          <div class="path-sem">第 8 学期</div>
-          <div class="path-date">2027 秋</div>
-          <div class="path-course">毕业设计 <span class="cr">4</span></div>
-          <div class="path-course">ML 工程实践 <span class="cr">3</span></div>
-          <div class="path-course">企业实习 <span class="cr">6</span></div>
-        </div>
-      </div>
-
-      <div class="save-bar">
-        <div class="save-bar-text">
-          <strong>觉得这份规划合理?</strong>&nbsp; 保存到我的计划,选课季提前提醒你 ✦
-        </div>
-        <button class="btn btn-ghost" data-go="4">改一下</button>
-        <button class="btn btn-rust" data-go="6">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-          保存,进入主面板
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        </button>
-      </div>
+      <button class="btn btn-ghost" data-go="4">改一下目标</button>
     </div>
 
     <div class="step-footer" style="margin-top: 28px;">
@@ -2717,13 +2624,67 @@
           <div class="course-action"><button class="add-btn" data-add>${plusSvg}</button></div>
         </div>
       `).join('');
-      // Bind add-btn clicks for the newly rendered cards (the page-load handler missed them)
+      // Bind add-btn clicks for the newly rendered cards
       resultsEl.querySelectorAll('[data-add]').forEach((btn) => {
         btn.addEventListener('click', () => {
           btn.classList.toggle('added');
           btn.innerHTML = btn.classList.contains('added') ? checkSvg : plusSvg;
         });
       });
+
+      // === Populate result-hero dynamic fields ===
+      const profile = (window.__skillpath && window.__skillpath.profile) || null;
+      const metaParts = [];
+      if (profile?.major) metaParts.push(profile.major);
+      if (profile?.year) metaParts.push('大' + profile.year);
+      if (profile?.gpa != null) metaParts.push('GPA ' + profile.gpa);
+      metaParts.push('目标: ' + career_goal);
+      const metaEl = document.getElementById('result-meta');
+      if (metaEl) metaEl.textContent = metaParts.join(' · ');
+      const headlineEl = document.getElementById('result-headline');
+      if (headlineEl) headlineEl.innerHTML = `你离<em>${career_goal}</em><br/>还差<em>这几门课</em>。`;
+      const gapTitle = document.getElementById('gap-panel-title');
+      if (gapTitle) gapTitle.textContent = `你和「${career_goal}」之间的技能桥梁`;
+
+      // === Aggregate bridge skills across all recommendations to render gap chart ===
+      const skillAgg = new Map(); // skill -> {totalScore, count, isGap}
+      data.recommendations.forEach((rec) => {
+        (rec.bridge_skills || []).forEach((b) => {
+          const existing = skillAgg.get(b.skill) || {totalScore: 0, count: 0, isGap: b.is_gap};
+          existing.totalScore += b.score;
+          existing.count += 1;
+          existing.isGap = existing.isGap || b.is_gap;
+          skillAgg.set(b.skill, existing);
+        });
+      });
+      const sortedSkills = Array.from(skillAgg.entries())
+        .map(([skill, v]) => ({skill, ...v}))
+        .sort((a, b) => b.totalScore - a.totalScore)
+        .slice(0, 10);
+      const maxScore = sortedSkills.length ? sortedSkills[0].totalScore : 1;
+      const gapContainer = document.getElementById('gap-skills-container');
+      if (gapContainer) {
+        if (!sortedSkills.length) {
+          gapContainer.innerHTML = '<p style="padding:16px;color:var(--ink-3);font-size:13px">没找到桥梁技能 — 这通常说明职业目标在你已修课程范围之外，建议改一下目标试试。</p>';
+        } else {
+          gapContainer.innerHTML = sortedSkills.map((s) => {
+            const pct = Math.round((s.totalScore / maxScore) * 100);
+            const tone = s.isGap ? 'critical' : 'ok';
+            const label = s.isGap ? '你还没有' : '已掌握';
+            return `
+              <div class="gap-row">
+                <div class="gap-head">
+                  <span class="gap-name">${s.skill}</span>
+                  <span class="gap-val">${label} · ${s.count} 门课命中</span>
+                </div>
+                <div class="gap-track">
+                  <div class="gap-fill ${tone}" style="width: ${pct}%"></div>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
     } catch (e) {
       resultsEl.innerHTML = `<p style="color:red;padding:12px">${e.message}</p>`;
     }
