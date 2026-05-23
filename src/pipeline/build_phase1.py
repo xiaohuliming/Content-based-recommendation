@@ -19,6 +19,7 @@ Reruns are resumable: LLM calls are cached on disk in output/cache/.
 import os
 from pathlib import Path
 
+import pandas as pd
 from anthropic import Anthropic
 from dotenv import load_dotenv
 from tqdm import tqdm
@@ -42,6 +43,18 @@ LINKEDIN_ARCHIVE = DATA_DIR / "archive.zip"
 JOB_SAMPLE_SIZE = 5000
 RANDOM_SEED = 42
 CACHE_FLUSH_INTERVAL = 100
+LIST_COLUMNS_TO_FLATTEN = ("schedules", "classrooms", "teachers")
+
+
+def _flatten_list_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Join list-valued cells into ';'-separated strings so CSV roundtrip is lossless."""
+    df = df.copy()
+    for col in LIST_COLUMNS_TO_FLATTEN:
+        if col in df.columns:
+            df.loc[:, col] = df[col].apply(
+                lambda v: ";".join(str(x) for x in v) if isinstance(v, list) else ""
+            )
+    return df
 
 
 def main() -> None:
@@ -60,7 +73,9 @@ def main() -> None:
     print(f"  collapsed to {len(excel_df)} unique offerings")
 
     courses_master = build_courses_master(pdf_courses, excel_df)
-    courses_master.to_csv(OUTPUT_DIR / "courses_master.csv", index=False)
+    _flatten_list_columns(courses_master).to_csv(
+        OUTPUT_DIR / "courses_master.csv", index=False
+    )
     print(f"  wrote courses_master.csv ({len(courses_master)} rows)")
 
     # ---- Step B: LinkedIn jobs ----
@@ -106,7 +121,9 @@ def main() -> None:
             cache.flush()
     cache.flush()
     courses_master["extracted_skills"] = [",".join(s) for s in course_skills]
-    courses_master.to_csv(OUTPUT_DIR / "courses_skills.csv", index=False)
+    _flatten_list_columns(courses_master).to_csv(
+        OUTPUT_DIR / "courses_skills.csv", index=False
+    )
     print(f"  wrote courses_skills.csv ({len(courses_master)} rows)")
 
     # ---- Step D: taxonomy ----
