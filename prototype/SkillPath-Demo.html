@@ -1973,6 +1973,7 @@
         <!-- API recommendation results injected here by wireSkillPath() -->
         <div id="recommendation-results"></div>
 
+        <div id="course-mock">
         <div class="course">
           <div class="course-rank">01</div>
           <div class="course-body">
@@ -2027,6 +2028,7 @@
             </div>
           </div>
           <div class="course-action"><button class="add-btn" data-add><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button></div>
+        </div>
         </div>
       </div>
 
@@ -2711,8 +2713,12 @@
         resultsEl.innerHTML = `<p style="color:red;padding:12px">${data.error || 'error'}</p>`;
         return;
       }
+      const mock = document.getElementById('course-mock');
+      if (mock) mock.style.display = 'none';
+      const plusSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+      const checkSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>';
       resultsEl.innerHTML = data.recommendations.map((rec, i) => `
-        <div class="course" style="border-bottom:1px solid var(--border-soft)">
+        <div class="course">
           <div class="course-rank">${String(i+1).padStart(2,'0')}</div>
           <div class="course-body">
             <div class="course-title">${rec.name || rec.code}</div>
@@ -2720,8 +2726,16 @@
             <div class="course-why">${rec.explanation || '(no explanation)'}</div>
             ${rec.gap_skills && rec.gap_skills.length ? `<div class="course-fills">${rec.gap_skills.map(s=>`<span class="skill-pill">补齐 · ${s}</span>`).join('')}</div>` : ''}
           </div>
+          <div class="course-action"><button class="add-btn" data-add>${plusSvg}</button></div>
         </div>
       `).join('');
+      // Bind add-btn clicks for the newly rendered cards (the page-load handler missed them)
+      resultsEl.querySelectorAll('[data-add]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          btn.classList.toggle('added');
+          btn.innerHTML = btn.classList.contains('added') ? checkSvg : plusSvg;
+        });
+      });
     } catch (e) {
       resultsEl.innerHTML = `<p style="color:red;padding:12px">${e.message}</p>`;
     }
