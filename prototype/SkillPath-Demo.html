@@ -1711,21 +1711,54 @@
   </section>
 
   <!-- ============== STEP 2: PROFILE ============== -->
+  <!-- ============== STEP 2: UPLOAD (dedicated) ============== -->
   <section class="step" data-step="2">
-    <div class="step-shell">
+    <div class="step-shell" style="max-width: 720px;">
       <span class="eyebrow">第 1 步 · 共 4 步</span>
-      <h2 class="headline">先认识一下,<em>你是谁</em>?</h2>
-      <p class="lead-sm">这些信息只会用来为你计算合适的课程。你可以随时回来修改。</p>
+      <h2 class="headline">先来,<em>上传你的成绩单</em></h2>
+      <p class="lead-sm">我们会自动识别你的专业、年级、GPA 和所有已修 / 在修课程，让后面的步骤直接跳过。不上传也行，可以手动填。</p>
 
-      <div class="form-section" style="background:#fef9e7;border:1px dashed #d4a017;padding:16px;border-radius:8px">
-        <label class="form-label">📄 上传你的成绩单（推荐，最快）</label>
-        <div class="form-hint">PDF 格式。我们会自动识别你的专业、年级、GPA 和已修课程。文件仅用于本次推荐，不存储。</div>
-        <div style="display:flex;gap:12px;align-items:center;margin-top:10px;flex-wrap:wrap">
+      <div class="form-section" style="background:#fef9e7;border:1px dashed #d4a017;padding:24px;border-radius:10px;margin-top:24px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span style="font-size:1.4em">📄</span>
+          <label class="form-label" style="margin:0">上传 PDF 成绩单</label>
+        </div>
+        <div class="form-hint" style="margin-bottom:14px">仅 PDF。文件经第三方 LLM 抽取信息后丢弃，不会本地存储。</div>
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
           <input id="transcript-file" type="file" accept=".pdf" />
           <button id="transcript-upload-btn" type="button" class="btn btn-primary">识别成绩单</button>
-          <span id="transcript-status" style="color:#666;font-size:0.9em"></span>
         </div>
+        <div id="transcript-status" style="color:#666;font-size:0.9em;margin-top:10px;min-height:1.2em"></div>
       </div>
+
+      <!-- Parsed result summary (hidden until upload succeeds) -->
+      <div id="transcript-summary" style="display:none;margin-top:18px;background:#e8f5e9;border:1px solid #4caf50;padding:18px;border-radius:10px">
+        <div style="font-weight:600;margin-bottom:10px;color:#1b5e20">✓ 已识别你的成绩单</div>
+        <div id="transcript-summary-grid" style="display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:0.95em"></div>
+        <div style="margin-top:14px;font-size:0.85em;color:#666">如有识别错误，进入下一步后仍可手动调整。</div>
+      </div>
+
+      <div class="step-footer" style="margin-top:24px">
+        <button class="btn btn-ghost" data-go="1">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          上一步
+        </button>
+        <button class="btn btn-ghost" data-go="manual" id="goto-manual">
+          没有成绩单？手动填写资料
+        </button>
+        <button class="btn btn-primary" id="continue-after-upload" data-go="4" style="display:none">
+          继续选择目标 →
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== STEP MANUAL: PROFILE (only shown when user chose manual) ============== -->
+  <section class="step" data-step="manual">
+    <div class="step-shell">
+      <span class="eyebrow">第 1 步 · 共 4 步 · 手动模式</span>
+      <h2 class="headline">先认识一下,<em>你是谁</em>?</h2>
+      <p class="lead-sm">没上传成绩单也没关系。手动填写以下信息，我们会照样为你计算合适的课程。</p>
 
       <div class="form-section">
         <label class="form-label">你的名字</label>
@@ -1769,9 +1802,9 @@
       </div>
 
       <div class="step-footer">
-        <button class="btn btn-ghost" data-go="1">
+        <button class="btn btn-ghost" data-go="2">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-          上一步
+          回到上传
         </button>
         <span class="footer-hint">只剩 3 步 · 快好了</span>
         <button class="btn btn-primary" data-go="3">
@@ -1837,7 +1870,7 @@
       </div>
 
       <div class="step-footer">
-        <button class="btn btn-ghost" data-go="2">
+        <button class="btn btn-ghost" data-go="manual">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
           上一步
         </button>
@@ -2524,20 +2557,23 @@
   const steps = document.querySelectorAll('.step');
   const progressSteps = document.querySelectorAll('.progress-step');
 
+  // Map non-integer step IDs to a progress-chip index (for visual consistency)
+  const stepChipIndex = { 'manual': 2 };
   function goTo(n) {
-    n = parseInt(n);
+    n = String(n);
     document.body.dataset.step = n;
-    steps.forEach((s) => s.classList.toggle('active', parseInt(s.dataset.step) === n));
+    steps.forEach((s) => s.classList.toggle('active', String(s.dataset.step) === n));
+    const chipIdx = stepChipIndex[n] !== undefined ? stepChipIndex[n] : parseInt(n);
     progressSteps.forEach((p, i) => {
       const idx = i + 1;
-      p.classList.toggle('active', idx === n);
-      p.classList.toggle('done', idx < n);
+      p.classList.toggle('active', idx === chipIdx);
+      p.classList.toggle('done', idx < chipIdx);
     });
     const restartLink = document.getElementById('restartLink');
-    if (restartLink) restartLink.style.display = n === 6 ? 'inline-flex' : 'none';
+    if (restartLink) restartLink.style.display = (n === '6') ? 'inline-flex' : 'none';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-  document.body.dataset.step = 1;
+  document.body.dataset.step = '1';
 
   document.querySelectorAll('[data-go]').forEach((el) => {
     el.addEventListener('click', (e) => {
@@ -2696,55 +2732,35 @@
 </script>
 
 <script>
-// ============= Transcript upload =============
+// ============= Transcript upload (dedicated step) =============
+window.__skillpath = window.__skillpath || {};
+
 (function wireTranscriptUpload() {
   const fileInput = document.getElementById('transcript-file');
   const btn = document.getElementById('transcript-upload-btn');
   const status = document.getElementById('transcript-status');
+  const summaryEl = document.getElementById('transcript-summary');
+  const summaryGrid = document.getElementById('transcript-summary-grid');
+  const continueBtn = document.getElementById('continue-after-upload');
+  const manualBtn = document.getElementById('goto-manual');
   if (!btn || !fileInput) return;
 
   function setStatus(msg, color = '#666') {
     if (status) { status.textContent = msg; status.style.color = color; }
   }
 
-  function pickChipByPredicate(containerId, predicate) {
-    const container = document.getElementById(containerId);
-    if (!container) return false;
-    const chips = container.querySelectorAll('.pick-chip');
-    for (const chip of chips) {
-      if (predicate(chip)) {
-        chips.forEach((c) => c.classList.remove('on'));
-        chip.classList.add('on');
-        return true;
-      }
-    }
-    return false;
-  }
-
-  function populateProfile(data) {
-    if (data.major) {
-      const m = document.getElementById('profile-major');
-      if (m) m.value = data.major;
-    }
-    if (data.year && data.year >= 1 && data.year <= 5) {
-      pickChipByPredicate('pick-grade', (c) => Number(c.dataset.year) === data.year);
-    }
-    if (data.gpa != null) {
-      const g = data.gpa;
-      pickChipByPredicate('pick-gpa', (c) => {
-        if (c.dataset.gpaNone !== undefined) return false;
-        const lo = c.dataset.gpaMin ? parseFloat(c.dataset.gpaMin) : -Infinity;
-        const hi = c.dataset.gpaMax ? parseFloat(c.dataset.gpaMax) : Infinity;
-        return g >= lo && g < hi;
-      });
-    }
-    // Push completed + current into the hidden input in Step 4
-    const allCourses = [
-      ...(data.completed_courses || []),
-      ...(data.current_courses || []),
+  function renderSummary(data) {
+    const rows = [
+      ['专业', data.major || '<em style="color:#999">未识别</em>'],
+      ['年级', data.year ? '大' + data.year : '<em style="color:#999">未识别</em>'],
+      ['GPA', data.gpa != null ? data.gpa : '<em style="color:#999">未识别</em>'],
+      ['已修课程', (data.completed_courses || []).length + ' 门'],
+      ['在修课程', (data.current_courses || []).length + ' 门'],
     ];
-    const cc = document.getElementById('input-completed-courses');
-    if (cc && allCourses.length) cc.value = allCourses.join(', ');
+    summaryGrid.innerHTML = rows.map(([k, v]) =>
+      `<div style="color:#666">${k}</div><div><strong>${v}</strong></div>`
+    ).join('');
+    summaryEl.style.display = 'block';
   }
 
   btn.addEventListener('click', async () => {
@@ -2752,25 +2768,36 @@
       setStatus('请先选择 PDF 文件', '#c33');
       return;
     }
-    const file = fileInput.files[0];
     setStatus('正在识别…通常需要 10-30 秒');
     btn.disabled = true;
+    summaryEl.style.display = 'none';
+    continueBtn.style.display = 'none';
+
     try {
       const form = new FormData();
-      form.append('file', file);
+      form.append('file', fileInput.files[0]);
       const r = await fetch('/api/transcript', { method: 'POST', body: form });
       const data = await r.json();
       if (!r.ok) {
         setStatus(`失败: ${data.error || r.status}`, '#c33');
         return;
       }
-      const n_done = (data.completed_courses || []).length;
-      const n_cur = (data.current_courses || []).length;
-      populateProfile(data);
-      setStatus(
-        `✓ 已识别: ${data.major || '专业未识别'} · ${data.year ? '大' + data.year : '年级未识别'} · GPA ${data.gpa ?? '未识别'} · 已修 ${n_done} 门 · 在修 ${n_cur} 门`,
-        '#080'
-      );
+
+      // Stash parsed profile for downstream steps to consume
+      window.__skillpath.profile = data;
+
+      // Push completed + current into the hidden Step 4 input
+      const allCourses = [
+        ...(data.completed_courses || []),
+        ...(data.current_courses || []),
+      ];
+      const cc = document.getElementById('input-completed-courses');
+      if (cc) cc.value = allCourses.join(', ');
+
+      renderSummary(data);
+      setStatus('✓ 识别成功，下一步直接选职业目标即可', '#080');
+      continueBtn.style.display = 'inline-flex';
+      if (manualBtn) manualBtn.style.display = 'none';
     } catch (e) {
       setStatus(`错误: ${e.message}`, '#c33');
     } finally {
