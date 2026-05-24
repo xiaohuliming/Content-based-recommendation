@@ -3354,7 +3354,7 @@
     const dl = document.getElementById('career-goal-options');
     if (dl) {
       dl.innerHTML = '';
-      for (const c of data.careers.slice(0, 200)) {
+      for (const c of data.careers) {
         const opt = document.createElement('option');
         opt.value = c;
         dl.appendChild(opt);

@@ -67,13 +67,41 @@ def create_app(graph_path: str | None = None) -> Flask:
 
     @app.get("/api/careers")
     def careers():
+        """Return clean career titles for autocomplete. The raw LinkedIn dump has
+        recruiter codes ('000198 - W2 Only ...'), asterisk-padded titles, sign-on
+        bonus prefixes, leading whitespace, and case-variant duplicates. Normalize
+        and filter them out for UI clarity."""
+        import re
+        NOISY_TOKEN = re.compile(r"\*{2,}|\|{2}|~~")
+        LEADING_BAD = re.compile(r"^[\*\$\(\d]")
+        TECH_DOT = re.compile(r"^\.[A-Za-z]")
+
+        def is_clean(t: str) -> bool:
+            if not (3 <= len(t) <= 60):
+                return False
+            if NOISY_TOKEN.search(t):
+                return False
+            if "$" in t:
+                return False
+            if t.startswith("."):
+                return bool(TECH_DOT.match(t))
+            return not bool(LEADING_BAD.match(t))
+
         g: nx.DiGraph = app.config["GRAPH"]
-        titles = sorted(
-            n.removeprefix("career:")
-            for n, d in g.nodes(data=True)
-            if d.get("type") == "career"
-        )
-        return jsonify({"careers": titles})
+        # Deduplicate case-insensitively; keep the variant with proper capitalization
+        # (longer = usually the Title-Cased one).
+        by_lower: dict[str, str] = {}
+        for n, d in g.nodes(data=True):
+            if d.get("type") != "career":
+                continue
+            t = n.removeprefix("career:").strip()
+            if not is_clean(t):
+                continue
+            key = t.lower()
+            if key not in by_lower or len(t) > len(by_lower[key]):
+                by_lower[key] = t
+
+        return jsonify({"careers": sorted(by_lower.values())})
 
     @app.post("/api/recommend")
     def recommend():
