@@ -2544,8 +2544,8 @@
   <section class="step" data-step="2">
     <div class="step-shell" style="max-width: 920px;">
       <span class="eyebrow">第 1 步 · 共 4 步</span>
-      <h2 class="headline">先来,<em>上传你的成绩单</em></h2>
-      <p class="lead-sm">一份 PDF 就够了 —— 我们会识别专业、年级、GPA 和所有课程，后面的步骤可以直接跳过。不想上传也没关系，可以手动填。</p>
+      <h2 class="headline">上传<em>成绩单</em></h2>
+      <p class="lead-sm">PDF 一份。专业、年级、GPA、课程会自动填好，后面几步跳过。也可以手动填。</p>
 
       <!-- Two-column hero: drop zone | what gets extracted -->
       <div class="upload-hero">
@@ -2565,7 +2565,7 @@
         </label>
 
         <div class="extract-list">
-          <div class="extract-list-title">我们会自动识别</div>
+          <div class="extract-list-title">识别字段</div>
           <div class="extract-item">
             <div class="extract-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -2575,7 +2575,7 @@
             </div>
             <div>
               <div class="extract-name">专业 + 年级</div>
-              <div class="extract-meta">从 Programme 或 Award 行</div>
+              <div class="extract-meta">来自 Programme / Award</div>
             </div>
           </div>
           <div class="extract-item">
@@ -2588,7 +2588,7 @@
             </div>
             <div>
               <div class="extract-name">累积 GPA</div>
-              <div class="extract-meta">用于挑选合适难度</div>
+              <div class="extract-meta">决定推荐难度区间</div>
             </div>
           </div>
           <div class="extract-item">
@@ -2599,8 +2599,8 @@
               </svg>
             </div>
             <div>
-              <div class="extract-name">已修课程代码</div>
-              <div class="extract-meta">用于推断你的技能基础</div>
+              <div class="extract-name">已修课程</div>
+              <div class="extract-meta">推断你已具备的技能</div>
             </div>
           </div>
           <div class="extract-item">
@@ -2611,8 +2611,8 @@
               </svg>
             </div>
             <div>
-              <div class="extract-name">本学期在修课程</div>
-              <div class="extract-meta">避免重复推荐</div>
+              <div class="extract-name">在修课程</div>
+              <div class="extract-meta">推荐时自动排除</div>
             </div>
           </div>
         </div>
@@ -2626,7 +2626,7 @@
           </svg>
           识别成绩单
         </button>
-        <span id="transcript-status">选择 PDF 文件后可开始识别</span>
+        <span id="transcript-status">选文件后可识别</span>
       </div>
 
       <!-- Parsed result summary (hidden until upload succeeds) -->
@@ -2635,10 +2635,10 @@
           <span class="parse-summary-check">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </span>
-          <span>已识别你的成绩单</span>
+          <span>识别完成</span>
         </div>
         <div class="parse-summary-grid" id="transcript-summary-grid"></div>
-        <div class="parse-summary-note">如有识别错误，进入下一步后仍可手动调整。隐私说明：PDF 仅经第三方 LLM 抽取后丢弃，不在本机存储。</div>
+        <div class="parse-summary-note">下一步可改。PDF 抽取后即丢弃，不存。</div>
       </div>
 
       <div class="step-footer" style="margin-top:28px">
@@ -2647,7 +2647,7 @@
           上一步
         </button>
         <button class="btn btn-ghost" data-go="manual" id="goto-manual">
-          没有成绩单？手动填写
+          手动填写
         </button>
         <button class="btn btn-primary" id="continue-after-upload" data-go="4" style="display:none">
           继续选择目标
@@ -2661,8 +2661,8 @@
   <section class="step" data-step="manual">
     <div class="step-shell">
       <span class="eyebrow">第 1 步 · 共 4 步 · 手动模式</span>
-      <h2 class="headline">先认识一下,<em>你是谁</em>?</h2>
-      <p class="lead-sm">没上传成绩单也没关系。手动填写以下信息，我们会照样为你计算合适的课程。</p>
+      <h2 class="headline">告诉我<em>你是谁</em></h2>
+      <p class="lead-sm">填以下字段。</p>
 
       <div class="form-section">
         <label class="form-label">你的名字</label>
@@ -2724,7 +2724,7 @@
     <div class="step-shell">
       <span class="eyebrow">第 2 步 · 共 4 步</span>
       <h2 class="headline">你<em>已经会</em>什么?</h2>
-      <p class="lead-sm">点选你比较熟悉的内容(可以多选)。不确定的就别选,我们会假设你需要从头学。</p>
+      <p class="lead-sm">点选你熟悉的内容（多选）。没把握就别选。</p>
 
       <div class="skills-group">
         <div class="skills-group-title">编程语言 <span class="count" id="cnt-lang">0 / 6</span></div>
@@ -2792,7 +2792,7 @@
     <div class="step-shell" style="max-width: 980px;">
       <span class="eyebrow">第 3 步 · 共 4 步</span>
       <h2 class="headline">你毕业后,<em>想成为什么</em>?</h2>
-      <p class="lead-sm">选一个你最感兴趣的方向。我们会根据这个目标 + 你刚才填的信息,给你一份个性化建议。可以下一步还改。</p>
+      <p class="lead-sm">选一个最感兴趣的方向。下一步还能改。</p>
 
       <div class="form-section" style="max-width: 540px; margin-bottom: 16px;">
         <label class="form-label">职业目标 (英文，用于精准匹配 API)</label>
@@ -2894,9 +2894,9 @@
       <div class="result-hero-content">
         <div class="result-meta" id="result-meta">先在上一步选职业目标，再回来这里看推荐</div>
         <h2 class="headline" style="margin-bottom: 10px;">
-          <span id="result-headline">你下学期该上的<em>课</em></span>
+          <span id="result-headline">下学期<em>该上的课</em></span>
         </h2>
-        <p class="lead-sm" style="margin-bottom: 0;">基于 5,000 条真实 LinkedIn 招聘 + 1,397 门 UIC 课程构建的异构图，跑 Personalized PageRank 得到下面这份推荐。每门课都解释了为什么推给你。</p>
+        <p class="lead-sm" style="margin-bottom: 0;">5,000 条 LinkedIn 招聘 + 1,397 门 UIC 课程构成异构图，Personalized PageRank 给出排序。每条推荐都带原因。</p>
       </div>
     </div>
 
@@ -2906,14 +2906,14 @@
       <div class="panel">
         <div class="panel-head">
           <div>
-            <div class="panel-title">推荐你下学期上这几门</div>
-            <div class="panel-sub">按 PageRank 分数排序 · 点 + 加入计划</div>
+            <div class="panel-title">下学期推荐</div>
+            <div class="panel-sub">PPR 分数排序 · 点 + 加入计划</div>
           </div>
         </div>
 
         <!-- All courses are rendered from /api/recommend; no mock data. -->
         <div id="recommendation-results">
-          <p style="padding:16px;color:var(--ink-3)">填好上方的职业目标，点"看我的规划"获取真实推荐。</p>
+          <p style="padding:16px;color:var(--ink-3)">填职业目标 → 点"看我的规划"。</p>
         </div>
       </div>
 
@@ -2921,21 +2921,21 @@
       <div class="panel">
         <div class="panel-head">
           <div>
-            <div class="panel-title" id="gap-panel-title">你和目标职业的技能桥梁</div>
-            <div class="panel-sub">PPR 在推荐时穿过的 skill 节点 · 红色 = 你还没有</div>
+            <div class="panel-title" id="gap-panel-title">技能桥梁</div>
+            <div class="panel-sub">PPR 路径上的 skill 节点 · 红色 = 缺口</div>
           </div>
         </div>
         <div id="gap-skills-container">
-          <p style="padding:16px;color:var(--ink-3);font-size:13px">提交职业目标后这里会展示技能差距分析。</p>
+          <p style="padding:16px;color:var(--ink-3);font-size:13px">提交后展示技能差距。</p>
         </div>
       </div>
     </div>
 
     <div class="save-bar" style="margin-top: 28px;">
       <div class="save-bar-text">
-        <strong>想看更全面的分析?</strong>&nbsp; 主面板有备选职业 / 技能版图 / 目标技能图谱 / 透明度说明。
+        <strong>看完整分析？</strong>&nbsp;主面板有备选职业、技能版图、完整技能图谱。
       </div>
-      <button class="btn btn-ghost" data-go="4">改一下目标</button>
+      <button class="btn btn-ghost" data-go="4">改目标</button>
       <button class="btn btn-rust" id="goto-dashboard">
         进入主面板
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -2960,7 +2960,7 @@
     <div class="dashboard-wrap">
       <div class="dashboard-header">
         <div class="dashboard-eyebrow">SKILLPATH · 综合面板</div>
-        <h1 class="dashboard-title" id="dashboard-title">你的<em>选课规划</em>主面板</h1>
+        <h1 class="dashboard-title" id="dashboard-title"><em>选课规划</em>主面板</h1>
         <div class="dashboard-chips" id="dashboard-chips"></div>
       </div>
 
@@ -2973,7 +2973,7 @@
             <div class="dashboard-panel-head">
               <div>
                 <div class="dashboard-panel-title">下学期推荐</div>
-                <div class="dashboard-panel-sub">按 Personalized PageRank 分数排序</div>
+                <div class="dashboard-panel-sub">PPR 分数排序</div>
               </div>
             </div>
             <div id="dashboard-recs"></div>
@@ -2982,8 +2982,8 @@
           <div class="dashboard-panel">
             <div class="dashboard-panel-head">
               <div>
-                <div class="dashboard-panel-title">你的技能版图</div>
-                <div class="dashboard-panel-sub">已修课程推断出的技能权重</div>
+                <div class="dashboard-panel-title">技能版图</div>
+                <div class="dashboard-panel-sub">已修课推断 · 按权重</div>
               </div>
             </div>
             <div class="dashboard-student-skills" id="dashboard-student-skills"></div>
@@ -2994,7 +2994,7 @@
           <div class="dashboard-panel-head">
             <div>
               <div class="dashboard-panel-title">备选职业方向</div>
-              <div class="dashboard-panel-sub">按技能向量余弦相似度排序 · 过滤了 &lt; 3 个职位的长尾</div>
+              <div class="dashboard-panel-sub">余弦相似度排序 · 过滤 &lt;3 职位的长尾</div>
             </div>
           </div>
           <div class="dashboard-alt-careers" id="dashboard-alt-careers"></div>
@@ -3004,19 +3004,17 @@
           <div class="dashboard-panel-head">
             <div>
               <div class="dashboard-panel-title" id="dashboard-career-skills-title">目标职业的技能要求</div>
-              <div class="dashboard-panel-sub">每条 = 该技能在该职业 JD 中的归一化频次</div>
+              <div class="dashboard-panel-sub">归一化频次（出现密度）</div>
             </div>
           </div>
           <div class="dashboard-career-skills" id="dashboard-career-skills"></div>
         </div>
 
         <div class="dashboard-transparency">
-          <strong>推荐机制说明：</strong>
-          系统构建了一张包含 <strong id="dash-stat-nodes">—</strong> 个节点的异构图（课程 / 技能 / 职业 / 学生），
-          你的画像作为一个临时学生节点插入图中。<strong>Personalized PageRank</strong>
-          从你的学生节点 + 目标职业节点同时出发随机游走（damping α=0.85），
-          落在哪些课程节点上的概率最高，就是你的推荐。每门课的"推荐理由"来自 2-hop 路径追踪：
-          课程 → 技能 → 职业。
+          <strong>怎么算的。</strong>
+          <strong id="dash-stat-nodes">—</strong> 个节点的异构图（课程/技能/职业/学生），你的画像临时插入。
+          <strong>PPR</strong> 从你 + 目标职业同时出发随机游走（α=0.85），命中概率最高的课程即推荐。
+          推荐理由来自 2 跳路径：课程 → 技能 → 职业。
           <div class="dashboard-stats-row" id="dash-stats-row"></div>
         </div>
       </div>
@@ -3048,7 +3046,7 @@
           <div class="dashboard-panel-head">
             <div>
               <div class="dashboard-panel-title">本次推荐的下学期课</div>
-              <div class="dashboard-panel-sub">来自 Personalized PageRank · 与"主面板"同源</div>
+              <div class="dashboard-panel-sub">PPR 结果 · 同主面板</div>
             </div>
           </div>
           <div id="courses-recs-list"></div>
@@ -3061,7 +3059,7 @@
           <div class="dashboard-panel">
             <div class="dashboard-panel-head">
               <div>
-                <div class="dashboard-panel-title">你现在已掌握</div>
+                <div class="dashboard-panel-title">已掌握</div>
                 <div class="dashboard-panel-sub">已修课推断出的技能 · 按权重排序</div>
               </div>
             </div>
@@ -3070,7 +3068,7 @@
           <div class="dashboard-panel">
             <div class="dashboard-panel-head">
               <div>
-                <div class="dashboard-panel-title">推完所有推荐课后将新增</div>
+                <div class="dashboard-panel-title">推完后会新增</div>
                 <div class="dashboard-panel-sub">推荐课覆盖的技能 ∩ 目标职业需要 \ 你已有</div>
               </div>
             </div>
@@ -3081,8 +3079,8 @@
         <div class="dashboard-panel" style="margin-bottom: 24px;">
           <div class="dashboard-panel-head">
             <div>
-              <div class="dashboard-panel-title">桥梁技能详情</div>
-              <div class="dashboard-panel-sub">每个技能横跨多少门推荐课 · 总 PPR 桥梁分</div>
+              <div class="dashboard-panel-title">桥梁技能</div>
+              <div class="dashboard-panel-sub">横跨课程数 + 总 PPR 桥梁分</div>
             </div>
           </div>
           <table class="dashboard-bridge-table">
@@ -3110,7 +3108,7 @@
         <div class="dashboard-panel" style="margin-bottom: 24px;">
           <div class="dashboard-panel-head">
             <div>
-              <div class="dashboard-panel-title" id="career-full-skills-title">完整技能要求</div>
+              <div class="dashboard-panel-title" id="career-full-skills-title">技能要求</div>
               <div class="dashboard-panel-sub">该职业 JD 中提到的所有技能 · 归一化频次</div>
             </div>
           </div>
@@ -3121,7 +3119,7 @@
           <div class="dashboard-panel-head">
             <div>
               <div class="dashboard-panel-title">备选职业 · 点击切换</div>
-              <div class="dashboard-panel-sub">换一个目标，整个 dashboard 实时重新计算</div>
+              <div class="dashboard-panel-sub">点了就实时重算</div>
             </div>
           </div>
           <div class="dashboard-alt-careers" id="career-alt-careers"></div>
@@ -3350,7 +3348,7 @@
       const gapContainer = document.getElementById('gap-skills-container');
       if (gapContainer) {
         if (!sortedSkills.length) {
-          gapContainer.innerHTML = '<p style="padding:16px;color:var(--ink-3);font-size:13px">没找到桥梁技能 — 这通常说明职业目标在你已修课程范围之外，建议改一下目标试试。</p>';
+          gapContainer.innerHTML = '<p style="padding:16px;color:var(--ink-3);font-size:13px">没桥梁技能。职业偏离已修范围，换个目标试试。</p>';
         } else {
           gapContainer.innerHTML = sortedSkills.map((s) => {
             const pct = Math.round((s.totalScore / maxScore) * 100);
@@ -3407,14 +3405,14 @@ window.__skillpath = window.__skillpath || {};
       filenameEl.innerHTML = '';
       filenameEl.classList.remove('shown');
       btn.disabled = true;
-      setStatus('选择 PDF 文件后可开始识别');
+      setStatus('选文件后可识别');
       return;
     }
     const sizeKB = (file.size / 1024).toFixed(0);
     filenameEl.innerHTML = `${PDF_ICON_SVG}<span>${file.name} · ${sizeKB} KB</span>`;
     filenameEl.classList.add('shown');
     btn.disabled = false;
-    setStatus(`已选择 ${file.name}，点击右侧按钮开始识别`);
+    setStatus(`${file.name} — 点右侧按钮识别`);
   }
 
   fileInput.addEventListener('change', () => fileSelected(fileInput.files[0]));
@@ -3441,7 +3439,7 @@ window.__skillpath = window.__skillpath || {};
       fileInput.files = dt.files;
       fileSelected(f);
     } else if (f) {
-      setStatus('只接受 PDF 文件', 'error');
+      setStatus('只接受 PDF', 'error');
     }
   });
 
@@ -3462,10 +3460,10 @@ window.__skillpath = window.__skillpath || {};
 
   btn.addEventListener('click', async () => {
     if (!fileInput.files || !fileInput.files[0]) {
-      setStatus('请先选择或拖入 PDF 文件', 'error');
+      setStatus('请先选 PDF', 'error');
       return;
     }
-    setStatus('正在识别…通常需要 10-30 秒');
+    setStatus('识别中... 约 10-30 秒');
     btn.disabled = true;
     summaryEl.style.display = 'none';
     continueBtn.style.display = 'none';
@@ -3490,7 +3488,7 @@ window.__skillpath = window.__skillpath || {};
       if (cc) cc.value = allCourses.join(', ');
 
       renderSummary(data);
-      setStatus('✓ 识别成功，下一步直接选职业目标', 'success');
+      setStatus('✓ 完成。下一步选职业', 'success');
       continueBtn.style.display = 'inline-flex';
       if (manualBtn) manualBtn.style.display = 'none';
     } catch (e) {
@@ -3537,10 +3535,10 @@ window.__skillpath = window.__skillpath || {};
     const bridgeSkills = new Set();
     data.recommendations.forEach(r => r.bridge_skills.forEach(b => bridgeSkills.add(b.skill)));
     const cells = [
-      [data.recommendations.length, '门推荐课程'],
-      [data.student_top_skills.length, '项你已掌握的技能'],
-      [bridgeSkills.size, '个桥梁技能 (推荐路径上)'],
-      [data.alternative_careers.length, '个备选职业方向'],
+      [data.recommendations.length, '门推荐'],
+      [data.student_top_skills.length, '项已掌握技能'],
+      [bridgeSkills.size, '个桥梁技能'],
+      [data.alternative_careers.length, '个备选职业'],
     ];
     el.innerHTML = cells.map(([val, lbl]) =>
       `<div class="dashboard-stat"><div class="dashboard-stat-val">${val}</div><div class="dashboard-stat-lbl">${lbl}</div></div>`
@@ -3576,7 +3574,7 @@ window.__skillpath = window.__skillpath || {};
     const el = document.getElementById('dashboard-student-skills');
     if (!el) return;
     if (!skills.length) {
-      el.innerHTML = '<p style="color:var(--ink-4);font-size:13px">没有识别到已修课程，技能版图为空。</p>';
+      el.innerHTML = '<p style="color:var(--ink-4);font-size:13px">没有已修课。</p>';
       return;
     }
     el.innerHTML = skills.map(s =>
@@ -3588,7 +3586,7 @@ window.__skillpath = window.__skillpath || {};
     const el = document.getElementById('dashboard-alt-careers');
     if (!el) return;
     if (!alts.length) {
-      el.innerHTML = '<p style="color:var(--ink-4);font-size:13px;padding:8px">没找到相似职业 — 目标职业的技能向量很特殊。</p>';
+      el.innerHTML = '<p style="color:var(--ink-4);font-size:13px;padding:8px">没找到相似职业。</p>';
       return;
     }
     el.innerHTML = alts.map(c => `
@@ -3606,7 +3604,7 @@ window.__skillpath = window.__skillpath || {};
     const el = document.getElementById('dashboard-career-skills');
     if (!el) return;
     if (!skills.length) {
-      el.innerHTML = '<p style="color:var(--ink-4);font-size:13px">该职业的 JD 数据稀疏，没有技能权重可展示。</p>';
+      el.innerHTML = '<p style="color:var(--ink-4);font-size:13px">JD 数据稀疏。</p>';
       return;
     }
     const max = Math.max(...skills.map(s => s.weight));
@@ -3650,7 +3648,7 @@ window.__skillpath = window.__skillpath || {};
         const sorted = [...completed].sort();
         doneGrid.innerHTML = `<div class="dashboard-code-grid">${sorted.map(c => `<div class="dashboard-code-pill">${c}</div>`).join('')}</div>`;
       } else {
-        doneGrid.innerHTML = '<div class="dashboard-empty">没有识别到已修课 — 请先上传成绩单或手动填课程代码。</div>';
+        doneGrid.innerHTML = '<div class="dashboard-empty">没有已修课。上传成绩单或手填课程代码。</div>';
       }
     }
 
@@ -3662,7 +3660,7 @@ window.__skillpath = window.__skillpath || {};
         const sorted = [...current].sort();
         curGrid.innerHTML = `<div class="dashboard-code-grid">${sorted.map(c => `<div class="dashboard-code-pill current">${c}</div>`).join('')}</div>`;
       } else {
-        curGrid.innerHTML = '<div class="dashboard-empty">本学期在修信息只在上传成绩单时识别。</div>';
+        curGrid.innerHTML = '<div class="dashboard-empty">只有上传成绩单时识别。</div>';
       }
     }
 
@@ -3716,7 +3714,7 @@ window.__skillpath = window.__skillpath || {};
           `<span class="dashboard-skill-pill gain">${s.skill}<span class="dashboard-skill-pill-weight">+${s.totalScore.toFixed(2)}</span></span>`
         ).join('');
       } else {
-        gainEl.innerHTML = '<div class="dashboard-empty">推荐课没有覆盖目标职业的新技能 — 可能职业目标和已修课重叠较多。</div>';
+        gainEl.innerHTML = '<div class="dashboard-empty">推荐没覆盖新技能（目标与已修重叠较多）。</div>';
       }
     }
 
@@ -3747,7 +3745,7 @@ window.__skillpath = window.__skillpath || {};
           </tr>
         `).join('');
       } else {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--ink-4);padding:20px">没有桥梁技能 — 推荐课与目标职业无技能交集。</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--ink-4);padding:20px">没桥梁技能。推荐课与目标无交集。</td></tr>';
       }
     }
   }
@@ -3764,7 +3762,7 @@ window.__skillpath = window.__skillpath || {};
     }
 
     // Career full skills (use all returned, not just top 15)
-    document.getElementById('career-full-skills-title').textContent = `「${data.career_goal}」的完整技能要求`;
+    document.getElementById('career-full-skills-title').textContent = `「${data.career_goal}」的技能要求`;
     const skillsEl = document.getElementById('career-full-skills');
     const skills = data.career_top_skills;
     if (skillsEl) {
@@ -3781,7 +3779,7 @@ window.__skillpath = window.__skillpath || {};
           `;
         }).join('');
       } else {
-        skillsEl.innerHTML = '<div class="dashboard-empty">该职业的 JD 数据稀疏。</div>';
+        skillsEl.innerHTML = '<div class="dashboard-empty">JD 数据稀疏。</div>';
       }
     }
 
@@ -3836,7 +3834,7 @@ window.__skillpath = window.__skillpath || {};
   async function loadAndRender(opts = {}) {
     const career_goal = document.getElementById('input-career-goal')?.value.trim();
     if (!career_goal) {
-      alert('请先在第 3 步选定职业目标。');
+      alert('请先选职业目标');
       goTo(4);
       return;
     }
