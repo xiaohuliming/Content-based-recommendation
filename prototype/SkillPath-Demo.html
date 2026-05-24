@@ -2794,20 +2794,7 @@
       <h2 class="headline">你毕业后,<em>想成为什么</em>?</h2>
       <p class="lead-sm">点一张卡选目标。卡片标签下面是它对应的 LinkedIn 英文 title（PPR 真实匹配的就是这个）。下一步还能改。</p>
 
-      <!-- Hidden inputs — set by card click or by transcript upload. Toggle "高级" to edit. -->
-      <div id="career-advanced" style="display:none; margin-bottom: 20px; padding: 16px 18px; background: var(--paper-2); border: 1px dashed var(--border); border-radius: 10px;">
-        <div class="form-section" style="max-width: 540px; margin-bottom: 12px;">
-          <label class="form-label">职业目标 — 英文 LinkedIn title</label>
-          <input class="form-input" id="input-career-goal" type="text" list="career-goal-options" placeholder="e.g. Data Engineer" />
-          <datalist id="career-goal-options"></datalist>
-          <div class="form-hint">数据库中有 4,242 个真实 title。输入自动补全。</div>
-        </div>
-        <div class="form-section" style="max-width: 540px; margin-bottom: 0;">
-          <label class="form-label">已修课程代码（覆盖上传的成绩单）</label>
-          <input class="form-input" id="input-completed-courses" type="text" placeholder="COMP1003, MATH1003, ..." />
-        </div>
-      </div>
-
+      <!-- Inputs live inside #career-advanced (below cards). Card click sets them invisibly. -->
       <div class="careers" id="careers">
         <div class="career on" data-career="ml">
           <div class="career-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
@@ -2942,10 +2929,24 @@
         </div>
       </div>
 
-      <div style="margin-top: 14px; text-align: center;">
+      <div style="margin-top: 18px; text-align: center;">
         <button type="button" id="toggle-career-advanced" class="btn btn-ghost" style="padding: 8px 16px; font-size: 12.5px;">
-          自定义其他职业 / 编辑课程列表 →
+          自定义其他职业 / 编辑课程列表 ↓
         </button>
+      </div>
+
+      <!-- Advanced inputs — appear directly below toggle when expanded. -->
+      <div id="career-advanced" style="display:none; margin-top: 16px; padding: 18px 20px; background: var(--paper-2); border: 1px dashed var(--border); border-radius: 10px;">
+        <div class="form-section" style="max-width: 540px; margin: 0 auto 14px;">
+          <label class="form-label">职业目标 — 英文 LinkedIn title</label>
+          <input class="form-input" id="input-career-goal" type="text" list="career-goal-options" placeholder="e.g. Data Engineer" />
+          <datalist id="career-goal-options"></datalist>
+          <div class="form-hint">数据库 3,800+ 个清洗后的真实 title 自动补全。</div>
+        </div>
+        <div class="form-section" style="max-width: 540px; margin: 0 auto;">
+          <label class="form-label">已修课程代码（覆盖上传的成绩单）</label>
+          <input class="form-input" id="input-completed-courses" type="text" placeholder="COMP1003, MATH1003, ..." />
+        </div>
       </div>
 
       <div class="step-footer">
@@ -3321,7 +3322,7 @@
   const defaultCard = document.querySelector('.career.on');
   if (defaultCard) selectCareerCard(defaultCard);
 
-  // Advanced toggle: show / hide the hidden input area
+  // Advanced toggle: show / hide the hidden input area (positioned BELOW the toggle button)
   const advBtn = document.getElementById('toggle-career-advanced');
   const advBox = document.getElementById('career-advanced');
   if (advBtn && advBox) {
@@ -3329,8 +3330,15 @@
       const open = advBox.style.display === 'block';
       advBox.style.display = open ? 'none' : 'block';
       advBtn.textContent = open
-        ? '自定义其他职业 / 编辑课程列表 →'
+        ? '自定义其他职业 / 编辑课程列表 ↓'
         : '收起 ↑';
+      if (!open) {
+        // Scroll the input into view so user sees it (avoids "where did it go" confusion)
+        requestAnimationFrame(() => {
+          advBox.scrollIntoView({behavior: 'smooth', block: 'center'});
+          document.getElementById('input-career-goal')?.focus();
+        });
+      }
     });
   }
 

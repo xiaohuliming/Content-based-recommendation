@@ -101,7 +101,9 @@ def create_app(graph_path: str | None = None) -> Flask:
             if key not in by_lower or len(t) > len(by_lower[key]):
                 by_lower[key] = t
 
-        return jsonify({"careers": sorted(by_lower.values())})
+        resp = jsonify({"careers": sorted(by_lower.values())})
+        resp.headers["Cache-Control"] = "no-store"
+        return resp
 
     @app.post("/api/recommend")
     def recommend():
