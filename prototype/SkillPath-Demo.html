@@ -1556,6 +1556,79 @@
     flex-wrap: wrap;
   }
 
+  /* Insight card (LLM narrative analysis) */
+  .insight-card {
+    background: linear-gradient(135deg, #fdf6e3 0%, #f8eed3 100%);
+    border: 1px solid var(--rust-soft);
+    border-radius: 14px;
+    padding: 28px 30px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .insight-card::before {
+    content: "AI INSIGHT";
+    position: absolute;
+    top: 14px;
+    right: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: var(--rust-deep);
+    opacity: 0.55;
+  }
+  .insight-headline {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.35;
+    letter-spacing: -0.012em;
+    margin: 0 110px 18px 0;
+    min-height: 28px;
+  }
+  .insight-sections {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  @media (max-width: 880px) {
+    .insight-sections { grid-template-columns: 1fr; }
+    .insight-card::before { right: 18px; top: 16px; }
+    .insight-headline { margin-right: 0; padding-right: 90px; }
+  }
+  .insight-section {
+    border-top: 1px solid rgba(184, 92, 56, 0.18);
+    padding-top: 12px;
+  }
+  .insight-section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    color: var(--rust-deep);
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .insight-section-body {
+    font-size: 13.5px;
+    color: var(--ink-2);
+    line-height: 1.6;
+  }
+  .insight-skeleton-line {
+    height: 14px;
+    background: linear-gradient(90deg, rgba(184,92,56,0.08) 0%, rgba(184,92,56,0.16) 50%, rgba(184,92,56,0.08) 100%);
+    background-size: 200% 100%;
+    animation: skeletonPulse 1.4s ease-in-out infinite;
+    border-radius: 4px;
+    margin-bottom: 6px;
+  }
+  .insight-error {
+    font-size: 12.5px;
+    color: var(--ink-4);
+    font-style: italic;
+  }
+
   /* Sub-view switching */
   .dashboard-view { display: none; }
   .dashboard-view.active { display: block; }
@@ -3041,6 +3114,39 @@
         <div class="dashboard-chips" id="dashboard-chips"></div>
       </div>
 
+      <!-- Insight card (LLM narrative) — visible regardless of which sub-view is active -->
+      <div class="insight-card" id="insight-card">
+        <div class="insight-headline" id="insight-headline">
+          <div class="insight-skeleton-line" style="width: 80%; height: 22px"></div>
+          <div class="insight-skeleton-line" style="width: 60%; height: 22px; margin-top: 6px"></div>
+        </div>
+        <div class="insight-sections" id="insight-sections">
+          <div class="insight-section">
+            <div class="insight-section-label" data-i18n="insight.strengths">Strengths</div>
+            <div class="insight-section-body" id="insight-strengths">
+              <div class="insight-skeleton-line" style="width:95%"></div>
+              <div class="insight-skeleton-line" style="width:88%"></div>
+              <div class="insight-skeleton-line" style="width:72%"></div>
+            </div>
+          </div>
+          <div class="insight-section">
+            <div class="insight-section-label" data-i18n="insight.gaps">Gaps</div>
+            <div class="insight-section-body" id="insight-gaps">
+              <div class="insight-skeleton-line" style="width:92%"></div>
+              <div class="insight-skeleton-line" style="width:85%"></div>
+              <div class="insight-skeleton-line" style="width:78%"></div>
+            </div>
+          </div>
+          <div class="insight-section">
+            <div class="insight-section-label" data-i18n="insight.strategy">Strategy</div>
+            <div class="insight-section-body" id="insight-strategy">
+              <div class="insight-skeleton-line" style="width:90%"></div>
+              <div class="insight-skeleton-line" style="width:80%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- ===== VIEW: OVERVIEW (default) ===== -->
       <div class="dashboard-view active" data-view="overview">
         <div class="dashboard-stats" id="dashboard-stats"></div>
@@ -4007,6 +4113,72 @@ window.__skillpath = window.__skillpath || {};
     });
   });
 
+  function setInsightSkeleton() {
+    const headlineEl = document.getElementById('insight-headline');
+    const ids = ['insight-strengths', 'insight-gaps', 'insight-strategy'];
+    if (headlineEl) {
+      headlineEl.innerHTML = `
+        <div class="insight-skeleton-line" style="width: 80%; height: 22px"></div>
+        <div class="insight-skeleton-line" style="width: 60%; height: 22px; margin-top: 6px"></div>
+      `;
+    }
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = `
+        <div class="insight-skeleton-line" style="width:95%"></div>
+        <div class="insight-skeleton-line" style="width:85%"></div>
+        <div class="insight-skeleton-line" style="width:72%"></div>
+      `;
+    });
+  }
+
+  function renderInsight(insight) {
+    const card = document.getElementById('insight-card');
+    const h = document.getElementById('insight-headline');
+    const s = document.getElementById('insight-strengths');
+    const g = document.getElementById('insight-gaps');
+    const x = document.getElementById('insight-strategy');
+    if (!card || !h || !s || !g || !x) return;
+    // If everything is empty, show fallback notice
+    if (!insight.headline && !insight.strengths && !insight.gaps && !insight.strategy) {
+      h.innerHTML = `<span class="insight-error">${t('insight.unavailable')}</span>`;
+      s.innerHTML = '';
+      g.innerHTML = '';
+      x.innerHTML = '';
+      return;
+    }
+    h.textContent = insight.headline || '';
+    s.textContent = insight.strengths || '';
+    g.textContent = insight.gaps || '';
+    x.textContent = insight.strategy || '';
+  }
+
+  async function loadInsight(career_goal, completed_courses, profile) {
+    setInsightSkeleton();
+    const lang = window.__skillpath?.lang || 'en';
+    try {
+      const r = await fetch('/api/insight', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          career_goal,
+          completed_courses,
+          profile: profile || {},
+          language: lang,
+          top_k: 10,
+        }),
+      });
+      const data = await r.json();
+      if (!r.ok) {
+        renderInsight({headline: '', strengths: '', gaps: '', strategy: ''});
+        return;
+      }
+      renderInsight(data);
+    } catch (e) {
+      renderInsight({headline: '', strengths: '', gaps: '', strategy: ''});
+    }
+  }
+
   async function loadAndRender(opts = {}) {
     const career_goal = document.getElementById('input-career-goal')?.value.trim();
     if (!career_goal) {
@@ -4048,6 +4220,8 @@ window.__skillpath = window.__skillpath || {};
         switchView('overview');
         goTo(6);
       }
+      // Kick off insight fetch in parallel — won't block dashboard render
+      loadInsight(career_goal, completed_courses, profile);
     } catch (e) {
       alert(t('alert.error') + ' ' + e.message);
     } finally {
@@ -4270,6 +4444,12 @@ const T = {
     'careerSkills.sparse.hint': '⚠️ Only <strong>{n} JD sample(s)</strong> for this career; each skill weighed 1/{k}. Sorted by global frequency (higher = more universal).',
     'careerSkills.sparseDataEmpty': 'JD data sparse.',
 
+    'insight.strengths': 'Strengths',
+    'insight.gaps': 'Gaps',
+    'insight.strategy': 'Strategy',
+    'insight.unavailable': 'AI insight unavailable. The recommendation results above are still valid.',
+    'insight.loading': 'Generating insight…',
+
     // Empty states
     'empty.altCareers': 'No similar careers found.',
     'empty.bridgeRow': 'No bridge skills — recommendations and target share nothing.',
@@ -4480,6 +4660,12 @@ const T = {
 
     'careerSkills.sparse.hint': '⚠️ 该职业只有 <strong>{n} 个 JD 样本</strong>，每个技能的权重都是 1/{k}。按技能在数据集中的全局频次排序（越高 = 越普遍）。',
     'careerSkills.sparseDataEmpty': 'JD 数据稀疏。',
+
+    'insight.strengths': '优势',
+    'insight.gaps': '缺口',
+    'insight.strategy': '建议',
+    'insight.unavailable': 'AI 洞察暂不可用。上方推荐结果仍然有效。',
+    'insight.loading': '生成洞察中…',
 
     'empty.altCareers': '没找到相似职业。',
     'empty.bridgeRow': '没桥梁技能。推荐课与目标无交集。',

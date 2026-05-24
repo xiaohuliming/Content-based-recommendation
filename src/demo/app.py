@@ -24,6 +24,7 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify, request, send_from_directory
 from openai import OpenAI
 
+from src.demo.insight import build_insight_prompt, generate_insight
 from src.demo.transcript import extract_transcript_text, parse_transcript_with_llm
 from src.demo.transient_student import add_transient_student
 from src.ppr.engine import (
@@ -232,6 +233,84 @@ def create_app(graph_path: str | None = None) -> Flask:
                 "n_students": nodes_by_type.get("student", 0),
             },
         })
+
+    @app.post("/api/insight")
+    def insight():
+        """LLM synthesis of the dashboard data into a 4-section narrative.
+
+        Body: same as /api/dashboard plus optional 'profile' dict (major/year/gpa/
+        completed_courses/current_courses passed through from the upload step)
+        and optional 'language' = 'en' | 'zh' (default 'en').
+        Returns: {headline, strengths, gaps, strategy} (any may be empty on failure).
+        """
+        payload = request.get_json(silent=True) or {}
+        career_goal = payload.get("career_goal")
+        completed = payload.get("completed_courses", []) or []
+        top_k = int(payload.get("top_k", 10))
+        language = payload.get("language", "en")
+        if language not in ("en", "zh"):
+            language = "en"
+        profile = payload.get("profile") or {}
+        if not career_goal:
+            return jsonify({"error": "career_goal required"}), 400
+
+        g: nx.DiGraph = app.config["GRAPH"]
+        career_node = f"career:{career_goal}"
+        if not g.has_node(career_node):
+            return jsonify({"error": f"unknown career: {career_goal}"}), 404
+
+        client, model = _get_llm()
+        if client is None:
+            return jsonify({"error": "LLM_API_KEY not configured on server"}), 503
+
+        # Reassemble enough dashboard data to build the prompt. Cheaper than re-
+        # running the full /api/dashboard pipeline because we only need the inputs
+        # the LLM will see — recs + skills + alt careers + career skills.
+        g_copy = copy.copy(g)
+        sid = add_transient_student(
+            g_copy,
+            completed_courses=completed,
+            student_id=f"DEMO_{secrets.token_hex(4)}",
+            career_goal=career_goal,
+        )
+        recs = recommend_courses(g_copy, sid, career_node, top_k=top_k)
+        recommendations = []
+        for course_node, score in recs:
+            code = course_node.removeprefix("course:")
+            name = g_copy.nodes[course_node].get("name", "")
+            expl = explain_recommendation(g_copy, sid, career_node, course_node, top_n=5)
+            recommendations.append({
+                "code": code, "name": name, "score": round(score, 6),
+                "bridge_skills": expl["bridge_skills"],
+                "gap_skills": expl["gap_skills_filled"],
+            })
+        student_top_skills = summarize_student_skills(g_copy, sid, top_k=10)
+        alt_careers = find_similar_careers(g, career_node, top_k=5, min_shared=2, min_postings=3)
+        career_skills: list[dict] = []
+        for _, skill_node, ed in g.out_edges(career_node, data=True):
+            if ed.get("edge_type") == "career-skill":
+                career_skills.append({
+                    "skill": skill_node.removeprefix("skill:"),
+                    "weight": round(ed["weight"], 4),
+                })
+        career_skills.sort(key=lambda r: -r["weight"])
+        career_skills = career_skills[:10]
+        n_postings = int(g.nodes[career_node].get("n_postings", 0))
+
+        prompt = build_insight_prompt(
+            profile=profile,
+            career=career_goal,
+            n_postings=n_postings,
+            recommendations=recommendations,
+            student_skills=student_top_skills,
+            career_skills=career_skills,
+            alt_careers=alt_careers,
+            language=language,
+        )
+        result = generate_insight(client, model, prompt, max_tokens=900)
+        resp = jsonify(result)
+        resp.headers["Cache-Control"] = "no-store"
+        return resp
 
     @app.post("/api/transcript")
     def transcript():
