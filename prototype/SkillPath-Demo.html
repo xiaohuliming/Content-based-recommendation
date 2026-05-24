@@ -2998,7 +2998,7 @@
         <div class="panel-head">
           <div>
             <div class="panel-title" id="gap-panel-title">技能桥梁</div>
-            <div class="panel-sub">PPR 路径上的 skill 节点 · 红色 = 缺口</div>
+            <div class="panel-sub">条长 = 多少门推荐课覆盖这项技能</div>
           </div>
         </div>
         <div id="gap-skills-container">
@@ -3437,43 +3437,62 @@
       const gapTitle = document.getElementById('gap-panel-title');
       if (gapTitle) gapTitle.textContent = `你和「${career_goal}」之间的技能桥梁`;
 
-      // === Aggregate bridge skills across all recommendations to render gap chart ===
-      const skillAgg = new Map(); // skill -> {totalScore, count, isGap}
+      // === Aggregate bridge skills across all recommendations ===
+      const skillAgg = new Map(); // skill -> {count, isGap}
       data.recommendations.forEach((rec) => {
         (rec.bridge_skills || []).forEach((b) => {
-          const existing = skillAgg.get(b.skill) || {totalScore: 0, count: 0, isGap: b.is_gap};
-          existing.totalScore += b.score;
+          const existing = skillAgg.get(b.skill) || {count: 0, isGap: b.is_gap};
           existing.count += 1;
           existing.isGap = existing.isGap || b.is_gap;
           skillAgg.set(b.skill, existing);
         });
       });
-      const sortedSkills = Array.from(skillAgg.entries())
+      const totalRecs = data.recommendations.length || 1;
+      const allSkills = Array.from(skillAgg.entries())
         .map(([skill, v]) => ({skill, ...v}))
-        .sort((a, b) => b.totalScore - a.totalScore)
-        .slice(0, 10);
-      const maxScore = sortedSkills.length ? sortedSkills[0].totalScore : 1;
+        .sort((a, b) => b.count - a.count);
+      const gaps = allSkills.filter(s => s.isGap);
+      const haves = allSkills.filter(s => !s.isGap);
+
+      function renderRow(s, tone) {
+        const pct = Math.max(8, Math.round((s.count / totalRecs) * 100));
+        const label = tone === 'critical' ? '推荐课能补' : '已会，将强化';
+        return `
+          <div class="gap-row">
+            <div class="gap-head">
+              <span class="gap-name">${s.skill}</span>
+              <span class="gap-val">${s.count} / ${totalRecs} 门推荐课 · ${label}</span>
+            </div>
+            <div class="gap-track">
+              <div class="gap-fill ${tone}" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }
+
       const gapContainer = document.getElementById('gap-skills-container');
       if (gapContainer) {
-        if (!sortedSkills.length) {
+        if (!allSkills.length) {
           gapContainer.innerHTML = '<p style="padding:16px;color:var(--ink-3);font-size:13px">没桥梁技能。职业偏离已修范围，换个目标试试。</p>';
         } else {
-          gapContainer.innerHTML = sortedSkills.map((s) => {
-            const pct = Math.round((s.totalScore / maxScore) * 100);
-            const tone = s.isGap ? 'critical' : 'ok';
-            const label = s.isGap ? '你还没有' : '已掌握';
-            return `
-              <div class="gap-row">
-                <div class="gap-head">
-                  <span class="gap-name">${s.skill}</span>
-                  <span class="gap-val">${label} · ${s.count} 门课命中</span>
-                </div>
-                <div class="gap-track">
-                  <div class="gap-fill ${tone}" style="width: ${pct}%"></div>
-                </div>
+          const sections = [];
+          if (gaps.length) {
+            sections.push(`
+              <div style="margin-bottom: 22px;">
+                <div style="font-size: 12px; color: var(--rust-deep); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px;">缺口 · 推荐课能补的技能（${gaps.length}）</div>
+                ${gaps.slice(0, 8).map(s => renderRow(s, 'critical')).join('')}
               </div>
-            `;
-          }).join('');
+            `);
+          }
+          if (haves.length) {
+            sections.push(`
+              <div>
+                <div style="font-size: 12px; color: var(--moss-deep, #6b7c46); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px;">已掌握 · 推荐课会强化的（${haves.length}）</div>
+                ${haves.slice(0, 5).map(s => renderRow(s, 'ok')).join('')}
+              </div>
+            `);
+          }
+          gapContainer.innerHTML = sections.join('');
         }
       }
     } catch (e) {
