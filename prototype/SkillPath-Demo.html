@@ -2792,17 +2792,20 @@
     <div class="step-shell" style="max-width: 980px;">
       <span class="eyebrow">第 3 步 · 共 4 步</span>
       <h2 class="headline">你毕业后,<em>想成为什么</em>?</h2>
-      <p class="lead-sm">选一个最感兴趣的方向。下一步还能改。</p>
+      <p class="lead-sm">点一张卡选目标。卡片标签下面是它对应的 LinkedIn 英文 title（PPR 真实匹配的就是这个）。下一步还能改。</p>
 
-      <div class="form-section" style="max-width: 540px; margin-bottom: 16px;">
-        <label class="form-label">职业目标 (英文，用于精准匹配 API)</label>
-        <input class="form-input" id="input-career-goal" type="text" list="career-goal-options" placeholder="e.g. Data Engineer, Machine Learning Engineer" />
-        <datalist id="career-goal-options"></datalist>
-      </div>
-
-      <div class="form-section" style="max-width: 540px; margin-bottom: 24px;">
-        <label class="form-label">已修课程代码 (逗号分隔)</label>
-        <input class="form-input" id="input-completed-courses" type="text" placeholder="COMP1003, MATH1003, ..." />
+      <!-- Hidden inputs — set by card click or by transcript upload. Toggle "高级" to edit. -->
+      <div id="career-advanced" style="display:none; margin-bottom: 20px; padding: 16px 18px; background: var(--paper-2); border: 1px dashed var(--border); border-radius: 10px;">
+        <div class="form-section" style="max-width: 540px; margin-bottom: 12px;">
+          <label class="form-label">职业目标 — 英文 LinkedIn title</label>
+          <input class="form-input" id="input-career-goal" type="text" list="career-goal-options" placeholder="e.g. Data Engineer" />
+          <datalist id="career-goal-options"></datalist>
+          <div class="form-hint">数据库中有 4,242 个真实 title。输入自动补全。</div>
+        </div>
+        <div class="form-section" style="max-width: 540px; margin-bottom: 0;">
+          <label class="form-label">已修课程代码（覆盖上传的成绩单）</label>
+          <input class="form-input" id="input-completed-courses" type="text" placeholder="COMP1003, MATH1003, ..." />
+        </div>
       </div>
 
       <div class="careers" id="careers">
@@ -2812,9 +2815,9 @@
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
           </div>
           <div class="career-name">机器学习工程师</div>
-          <div class="career-salary">¥ 28K – 45K / 月</div>
-          <div class="career-meta">做 AI 模型、推荐系统、智能应用。市场需求最大的方向之一。</div>
-          <div class="career-tags"><span>Python</span><span>数学</span><span>大数据</span><span>前景 ★★★★★</span></div>
+          <div class="career-salary">→ AI Engineer</div>
+          <div class="career-meta">做 AI 模型、推荐系统、智能应用。</div>
+          <div class="career-tags"><span>Python</span><span>数学</span><span>大数据</span></div>
         </div>
 
         <div class="career" data-career="ds">
@@ -2823,8 +2826,8 @@
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
           </div>
           <div class="career-name">数据科学家</div>
-          <div class="career-salary">¥ 25K – 40K / 月</div>
-          <div class="career-meta">用数据回答业务问题,做实验、报告、A/B 测试。</div>
+          <div class="career-salary">→ Data Scientist</div>
+          <div class="career-meta">用数据回答业务问题，做实验、报告、A/B 测试。</div>
           <div class="career-tags"><span>统计</span><span>SQL</span><span>可视化</span></div>
         </div>
 
@@ -2834,8 +2837,8 @@
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>
           </div>
           <div class="career-name">后端工程师</div>
-          <div class="career-salary">¥ 22K – 38K / 月</div>
-          <div class="career-meta">写服务器、数据库、做架构。最经典的程序员岗位。</div>
+          <div class="career-salary">→ Back End Developer</div>
+          <div class="career-meta">写服务器、数据库、做架构。</div>
           <div class="career-tags"><span>Java / Go</span><span>分布式</span><span>数据库</span></div>
         </div>
 
@@ -2845,8 +2848,8 @@
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
           </div>
           <div class="career-name">前端工程师</div>
-          <div class="career-salary">¥ 18K – 32K / 月</div>
-          <div class="career-meta">做网页、App、用户能直接看到的东西,讲究审美。</div>
+          <div class="career-salary">→ Front End Developer</div>
+          <div class="career-meta">做网页、App，用户能直接看到的东西。</div>
           <div class="career-tags"><span>JS / TS</span><span>React</span><span>设计感</span></div>
         </div>
 
@@ -2856,8 +2859,8 @@
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
           </div>
           <div class="career-name">数据分析师</div>
-          <div class="career-salary">¥ 15K – 28K / 月</div>
-          <div class="career-meta">用 SQL + 表格 + 仪表盘看清业务发生了什么。入门友好。</div>
+          <div class="career-salary">→ Data Analyst</div>
+          <div class="career-meta">用 SQL + 表格 + 仪表盘看清业务发生了什么。</div>
           <div class="career-tags"><span>SQL</span><span>Excel</span><span>BI 工具</span></div>
         </div>
 
@@ -2867,10 +2870,82 @@
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11.24V7.5a2.5 2.5 0 0 1 5 0v3.74"/><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 14h6M9 17h6"/></svg>
           </div>
           <div class="career-name">AI 研究员</div>
-          <div class="career-salary">¥ 30K – 60K / 月</div>
+          <div class="career-salary">→ Lead Machine Learning Researcher</div>
           <div class="career-meta">做前沿研究、发论文。一般需要读研或读博。</div>
           <div class="career-tags"><span>数学</span><span>科研</span><span>论文</span></div>
         </div>
+
+        <div class="career" data-career="pm">
+          <div class="career-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="career-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01"/></svg>
+          </div>
+          <div class="career-name">项目经理</div>
+          <div class="career-salary">→ Project Manager</div>
+          <div class="career-meta">协调多方推进项目，最常见的非技术岗位。</div>
+          <div class="career-tags"><span>沟通</span><span>排期</span><span>风险管理</span></div>
+        </div>
+
+        <div class="career" data-career="biz">
+          <div class="career-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="career-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div class="career-name">商务分析师</div>
+          <div class="career-salary">→ Business Analyst</div>
+          <div class="career-meta">连接业务需求和数据，搭桥的人。</div>
+          <div class="career-tags"><span>需求分析</span><span>流程梳理</span><span>SQL</span></div>
+        </div>
+
+        <div class="career" data-career="acc">
+          <div class="career-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="career-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="13" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="13" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg>
+          </div>
+          <div class="career-name">会计</div>
+          <div class="career-salary">→ Accountant</div>
+          <div class="career-meta">做账、报税、合规。证书加成大（CPA / ACCA）。</div>
+          <div class="career-tags"><span>会计准则</span><span>Excel</span><span>财务报告</span></div>
+        </div>
+
+        <div class="career" data-career="mkt">
+          <div class="career-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="career-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>
+          </div>
+          <div class="career-name">市场经理</div>
+          <div class="career-salary">→ Marketing Manager</div>
+          <div class="career-meta">做品牌、做内容、跑投放、看转化。</div>
+          <div class="career-tags"><span>内容</span><span>投放</span><span>分析</span></div>
+        </div>
+
+        <div class="career" data-career="fin">
+          <div class="career-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="career-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div class="career-name">金融分析师</div>
+          <div class="career-salary">→ Financial Analyst</div>
+          <div class="career-meta">看公司、看市场、做估值，投资行业入口。</div>
+          <div class="career-tags"><span>估值</span><span>建模</span><span>研报</span></div>
+        </div>
+
+        <div class="career" data-career="design">
+          <div class="career-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="career-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+          </div>
+          <div class="career-name">视觉设计师</div>
+          <div class="career-salary">→ Graphic Designer</div>
+          <div class="career-meta">做视觉、做品牌物料、做包装。</div>
+          <div class="career-tags"><span>Adobe</span><span>排版</span><span>色彩</span></div>
+        </div>
+      </div>
+
+      <div style="margin-top: 14px; text-align: center;">
+        <button type="button" id="toggle-career-advanced" class="btn btn-ghost" style="padding: 8px 16px; font-size: 12.5px;">
+          自定义其他职业 / 编辑课程列表 →
+        </button>
       </div>
 
       <div class="step-footer">
@@ -3206,9 +3281,15 @@
     fe: '前端工程师',
     da: '数据分析师',
     ai: 'AI 研究员',
+    pm: '项目经理',
+    biz: '商务分析师',
+    acc: '会计',
+    mkt: '市场经理',
+    fin: '金融分析师',
+    design: '视觉设计师',
   };
-  // Map each card to an English job title that actually exists in the loaded graph,
-  // so clicking auto-populates the API input field.
+  // Map each card to an English job title that actually exists in the loaded graph.
+  // Verified against output/phase2/graph.pkl — all titles return HTTP 200 from /api/recommend.
   const careerApiTitles = {
     ml: 'AI Engineer',
     ds: 'Data Scientist',
@@ -3216,6 +3297,12 @@
     fe: 'Front End Developer',
     da: 'Data Analyst',
     ai: 'Lead Machine Learning Researcher',
+    pm: 'Project Manager',
+    biz: 'Business Analyst',
+    acc: 'Accountant',
+    mkt: 'Marketing Manager',
+    fin: 'Financial Analyst',
+    design: 'Graphic Designer',
   };
 
   function selectCareerCard(card) {
@@ -3233,6 +3320,19 @@
   // Pre-populate input from the default "on" card so first-submit works without re-clicking
   const defaultCard = document.querySelector('.career.on');
   if (defaultCard) selectCareerCard(defaultCard);
+
+  // Advanced toggle: show / hide the hidden input area
+  const advBtn = document.getElementById('toggle-career-advanced');
+  const advBox = document.getElementById('career-advanced');
+  if (advBtn && advBox) {
+    advBtn.addEventListener('click', () => {
+      const open = advBox.style.display === 'block';
+      advBox.style.display = open ? 'none' : 'block';
+      advBtn.textContent = open
+        ? '自定义其他职业 / 编辑课程列表 →'
+        : '收起 ↑';
+    });
+  }
 
   // ============= Add to plan =============
   document.querySelectorAll('[data-add]').forEach((btn) => {
