@@ -195,22 +195,25 @@ def create_app(graph_path: str | None = None) -> Flask:
             if t:
                 nodes_by_type[t] = nodes_by_type.get(t, 0) + 1
 
-        # Alternative careers ranked by skill-vector cosine. min_postings filters
-        # out the long-tail one-off recruiter titles ("000198 - W2 Only - ...") that
-        # would otherwise dominate the list when the target is itself niche.
+        # Alternative careers ranked by skill-vector cosine. min_shared=2 keeps
+        # niche careers (1-posting AI Engineer etc.) discoverable while still
+        # filtering noise via min_postings.
         alt_careers = find_similar_careers(
-            g, career_node, top_k=5, min_shared=3, min_postings=3,
+            g, career_node, top_k=6, min_shared=2, min_postings=3,
         )
 
-        # All skills the target career needs (for the "career profile" panel)
+        # All skills the target career needs (for the "career profile" panel).
+        # Include the skill's global doc_frequency so the UI can break ties when
+        # the career has few postings (all skill weights equal to 1/N).
         career_needs: list[dict] = []
         for _, skill_node, ed in g.out_edges(career_node, data=True):
             if ed.get("edge_type") == "career-skill":
                 career_needs.append({
                     "skill": skill_node.removeprefix("skill:"),
                     "weight": round(ed["weight"], 4),
+                    "doc_frequency": int(g.nodes[skill_node].get("doc_frequency", 0)),
                 })
-        career_needs.sort(key=lambda r: -r["weight"])
+        career_needs.sort(key=lambda r: (-r["weight"], -r["doc_frequency"]))
 
         return jsonify({
             "student_id": sid,

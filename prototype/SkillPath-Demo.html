@@ -3725,16 +3725,30 @@ window.__skillpath = window.__skillpath || {};
     `).join('');
   }
 
-  function renderCareerSkills(career, skills) {
-    const titleEl = document.getElementById('dashboard-career-skills-title');
-    if (titleEl) titleEl.textContent = `「${career}」的技能要求`;
-    const el = document.getElementById('dashboard-career-skills');
+  // Render career-skill list with auto-fallback to pills when weights are uniform
+  // (happens when career has very few JDs and each skill ends up with 1/N weight).
+  function renderCareerSkillsAuto(el, skills, nPostings) {
     if (!el) return;
     if (!skills.length) {
       el.innerHTML = '<p style="color:var(--ink-4);font-size:13px">JD 数据稀疏。</p>';
       return;
     }
-    const max = Math.max(...skills.map(s => s.weight));
+    const weights = skills.map(s => s.weight);
+    const variance = Math.max(...weights) - Math.min(...weights);
+    if (variance < 0.001) {
+      // Uniform — render as pills sorted by global doc_frequency (more universal first)
+      const sorted = [...skills].sort((a, b) => (b.doc_frequency || 0) - (a.doc_frequency || 0));
+      const hint = `<div style="font-size:12px;color:var(--ink-4);margin-bottom:12px;line-height:1.5">
+        ⓘ 该职业只有 <strong>${nPostings} 个 JD 样本</strong>，每个技能的权重都是 1/${skills.length}。
+        所以这里按技能在整个数据集中的全局频次排序（越高 = 越普遍）。
+      </div>`;
+      el.innerHTML = hint + '<div class="dashboard-student-skills">' + sorted.map(s =>
+        `<span class="dashboard-skill-pill">${s.skill}<span class="dashboard-skill-pill-weight">${s.doc_frequency || 0}</span></span>`
+      ).join('') + '</div>';
+      return;
+    }
+    // Varied weights — bar chart
+    const max = Math.max(...weights);
     el.innerHTML = skills.map(s => {
       const w = pct(s.weight, max);
       return `
@@ -3745,6 +3759,12 @@ window.__skillpath = window.__skillpath || {};
         </div>
       `;
     }).join('');
+  }
+
+  function renderCareerSkills(career, skills, nPostings) {
+    const titleEl = document.getElementById('dashboard-career-skills-title');
+    if (titleEl) titleEl.textContent = `「${career}」的技能要求`;
+    renderCareerSkillsAuto(document.getElementById('dashboard-career-skills'), skills, nPostings);
   }
 
   function renderTransparency(stats, nPostings, careerGoal) {
@@ -3890,25 +3910,11 @@ window.__skillpath = window.__skillpath || {};
 
     // Career full skills (use all returned, not just top 15)
     document.getElementById('career-full-skills-title').textContent = `「${data.career_goal}」的技能要求`;
-    const skillsEl = document.getElementById('career-full-skills');
-    const skills = data.career_top_skills;
-    if (skillsEl) {
-      if (skills.length) {
-        const max = Math.max(...skills.map(s => s.weight));
-        skillsEl.innerHTML = skills.map(s => {
-          const w = pct(s.weight, max);
-          return `
-            <div class="dashboard-career-skill">
-              <div class="dashboard-career-skill-name">${s.skill}</div>
-              <div class="dashboard-career-skill-bar"><div class="dashboard-career-skill-fill" style="width:${w}%"></div></div>
-              <div class="dashboard-career-skill-pct">${s.weight}</div>
-            </div>
-          `;
-        }).join('');
-      } else {
-        skillsEl.innerHTML = '<div class="dashboard-empty">JD 数据稀疏。</div>';
-      }
-    }
+    renderCareerSkillsAuto(
+      document.getElementById('career-full-skills'),
+      data.career_top_skills,
+      data.career_n_postings,
+    );
 
     // Alt careers with switch action
     const altEl = document.getElementById('career-alt-careers');
@@ -3988,7 +3994,7 @@ window.__skillpath = window.__skillpath || {};
       renderRecs(data.recommendations);
       renderStudentSkills(data.student_top_skills);
       renderAltCareers(data.alternative_careers);
-      renderCareerSkills(data.career_goal, data.career_top_skills);
+      renderCareerSkills(data.career_goal, data.career_top_skills, data.career_n_postings);
       renderTransparency(data.graph_stats, data.career_n_postings, data.career_goal);
       // Sub-views
       renderCoursesView(data, profile);
